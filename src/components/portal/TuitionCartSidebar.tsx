@@ -17,10 +17,9 @@ interface TuitionCartSidebarProps {
   items: TuitionCartItem[];
   onRemoveItem: (itemId: string, studentId?: string) => void;
   onCheckout: () => void;
-  campus: string;
 }
 
-export const TuitionCartSidebar = ({ items, onRemoveItem, onCheckout, campus }: TuitionCartSidebarProps) => {
+export const TuitionCartSidebar = ({ items, onRemoveItem, onCheckout }: TuitionCartSidebarProps) => {
   const { t, language, formatCurrency } = useLanguage();
   
   const total = items.reduce((sum, item) => sum + item.price, 0);
@@ -47,16 +46,6 @@ export const TuitionCartSidebar = ({ items, onRemoveItem, onCheckout, campus }: 
             </div>
           ) : (
             <>
-              {/* Campus Info */}
-              <div className="bg-primary/5 p-3 rounded-lg">
-                <p className={`text-xs text-muted-foreground mb-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                  {language === 'th' ? 'Campus' : 'Campus'}
-                </p>
-                <p className={`font-medium text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                  {campus}
-                </p>
-              </div>
-
               {/* Important Note */}
               <div className="bg-warning-orange/10 border border-warning-orange/20 p-3 rounded-lg flex gap-2">
                 <AlertCircle className="h-4 w-4 text-warning-orange flex-shrink-0 mt-0.5" />

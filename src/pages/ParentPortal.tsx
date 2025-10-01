@@ -11,26 +11,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { 
   Calendar, 
-  MapPin, 
-  Users,
   DollarSign,
   CreditCard,
   GraduationCap,
   Receipt,
-  AlertCircle,
-  ChevronDown
+  AlertCircle
 } from "lucide-react";
-import { mockStudents, getMockDataForStudent, mockInvoices, mockCreditNotes, mockReceipts, campusList, mandatoryCourses } from "@/data/mockData";
+import { mockStudents, getMockDataForStudent, mockInvoices, mockCreditNotes, mockReceipts, mandatoryCourses } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -61,7 +50,6 @@ export const ParentPortal = ({
 }: ParentPortalProps) => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'receipts'>('dashboard');
   const [selectedStudent, setSelectedStudent] = useState<string>(mockStudents[0]?.id.toString() || '1');
-  const [currentCampus, setCurrentCampus] = useState<string>(mockStudents[0]?.campus || 'Pracha Uthit');
   const [paymentPeriod, setPaymentPeriod] = useState<'Yearly' | 'Termly'>('Yearly');
   
   const { t, language, formatCurrency } = useLanguage();
@@ -103,16 +91,6 @@ export const ParentPortal = ({
       // Find student info for tuition
       const student = mockStudents.find(s => s.id === invoice.student_id);
       if (student) {
-        // Check campus validation
-        if (cartItems.length > 0 && student.campus !== currentCampus) {
-          toast({
-            title: t('portal.campusMismatch') || 'Campus Mismatch',
-            description: t('portal.campusMismatchDesc') || `Please switch to ${student.campus} campus or clear your cart`,
-            variant: "destructive",
-            duration: 4000,
-          });
-          return;
-        }
         studentInfo = { studentId: student.id.toString(), studentName: student.name };
       }
       
@@ -140,16 +118,6 @@ export const ParentPortal = ({
       // Find student info for courses
       const currentStudent = mockStudents.find(s => s.id.toString() === studentId);
       if (currentStudent) {
-        // Check campus validation
-        if (cartItems.length > 0 && currentStudent.campus !== currentCampus) {
-          toast({
-            title: t('portal.campusMismatch') || 'Campus Mismatch',
-            description: t('portal.campusMismatchDesc') || `Please switch to ${currentStudent.campus} campus or clear your cart`,
-            variant: "destructive",
-            duration: 4000,
-          });
-          return;
-        }
         studentInfo = { studentId: currentStudent.id.toString(), studentName: currentStudent.name };
       }
       
@@ -175,7 +143,6 @@ export const ParentPortal = ({
 
   const handleStudentChange = (student: typeof mockStudents[0]) => {
     setSelectedStudent(student.id.toString());
-    setCurrentCampus(student.campus);
   };
 
   const handleRemoveFromCart = (itemId: string, studentId?: string) => {
@@ -209,82 +176,6 @@ export const ParentPortal = ({
         />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        {/* Campus Overview Banner with Student Switcher */}
-        <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-primary/10 to-education-blue/5 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <MapPin className="h-6 w-6 text-primary flex-shrink-0" />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h2 className={`text-lg sm:text-xl font-bold truncate ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                    {language === 'th' ? campusList.find(c => c.nameEn === currentCampus)?.name : currentCampus} Campus
-                  </h2>
-                </div>
-                
-                {/* Student Switcher Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-auto p-0 hover:bg-transparent">
-                      <div className="flex items-center gap-2">
-                        <p className={`text-muted-foreground text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                          {mockStudents
-                            .filter(s => s.campus === currentCampus)
-                            .map((s, idx) => `${idx + 1}. ${s.name}`)
-                            .join(', ')}
-                        </p>
-                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[280px]">
-                    <DropdownMenuLabel className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
-                      {language === 'th' ? 'เลือกนักเรียน / Campus' : 'Select Student / Campus'}
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {mockStudents.map((student, index) => (
-                      <DropdownMenuItem
-                        key={student.id}
-                        onClick={() => handleStudentChange(student)}
-                        className={`cursor-pointer ${student.campus === currentCampus ? 'bg-primary/5' : ''}`}
-                      >
-                        <div className="flex items-center gap-3 w-full">
-                          <span className="text-lg">{student.avatar}</span>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className={`font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                                {index + 1}. {student.name}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="outline" className="text-xs">
-                                {student.class}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">
-                                {language === 'th' ? campusList.find(c => c.nameEn === student.campus)?.name : student.campus}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-            <ChildrenOverview />
-          </div>
-          {cartItems.length > 0 && (
-            <div className="mt-2 p-2 bg-primary/5 rounded-md">
-              <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                {language === 'th' 
-                  ? `📌 ตอนนี้คุณกำลังเพิ่มรายการสำหรับ ${currentCampus} Campus เท่านั้น หากต้องการเปลี่ยน Campus กรุณาเปลี่ยนนักเรียน`
-                  : `📌 Currently adding items for ${currentCampus} Campus only. Switch student to change campus.`}
-              </p>
-            </div>
-          )}
-        </div>
-
-
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'receipts')} className="space-y-6">
           {/* Desktop Navigation - Tabs */}
           <TabsList className="hidden md:grid w-full grid-cols-3 gap-1">
@@ -445,7 +336,6 @@ export const ParentPortal = ({
                   }))}
                   onRemoveItem={handleRemoveFromCart}
                   onCheckout={handleGoToCart}
-                  campus={currentCampus}
                 />
               </div>
             </div>
