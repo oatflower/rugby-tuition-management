@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Menu, LogOut, Bell, DollarSign, Clock, Sun, Receipt, ShoppingCart } from "lucide-react";
+import { GraduationCap, Menu, LogOut, Bell, DollarSign, Receipt, ShoppingCart } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import sisbLogo from "@/assets/rugby-logo.jpg";
 import { ParentAccountSelector } from "./ParentAccountSelector";
@@ -185,14 +185,6 @@ export const PortalHeader = ({
                     <button onClick={() => onTabChange?.("tuition")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "tuition" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
                       <DollarSign className="h-4 w-4" />
                       Tuition
-                    </button>
-                    <button onClick={() => onTabChange?.("afterschool")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "afterschool" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      <Clock className="h-4 w-4" />
-                      After School
-                    </button>
-                    <button onClick={() => onTabChange?.("summer")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "summer" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      <Sun className="h-4 w-4" />
-                      Summer
                     </button>
                     <button onClick={() => onTabChange?.("receipts")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "receipts" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
                       <Receipt className="h-4 w-4" />
