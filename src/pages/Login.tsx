@@ -6,7 +6,7 @@ import { SignUp } from "@/components/auth/SignUp";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 import schoolBuilding from "@/assets/rugby-school-building.jpg";
-import sisbLogo from "@/assets/sisb-logo-new.png";
+import sisbLogo from "@/assets/rugby-logo.jpg";
 
 interface LoginProps {
   onLogin: () => void;
@@ -83,7 +83,7 @@ export const Login = ({ onLogin }: LoginProps) => {
         <div className="absolute top-6 left-6 z-10">
           <img 
             src={sisbLogo} 
-            alt="SISB International Schools"
+            alt="Rugby School Thailand"
             className="h-20 w-auto"
           />
         </div>
@@ -106,7 +106,7 @@ export const Login = ({ onLogin }: LoginProps) => {
               <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
                 <img 
                   src={sisbLogo} 
-                  alt="SISB International Schools"
+                  alt="Rugby School Thailand"
                   className="h-24 w-auto"
                 />
               </div>
