@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu, LogOut, Bell, DollarSign, Clock, Sun, Receipt, ShoppingCart } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import sisbLogo from "@/assets/sisb-payment-logo.png";
+import sisbLogo from "@/assets/rugby-logo.jpg";
 import { ParentAccountSelector } from "./ParentAccountSelector";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -92,7 +92,7 @@ export const PortalHeader = ({
           <div className="flex justify-between items-center h-16">
             {/* Logo & Title */}
             <div className="flex items-center gap-3">
-              <img src={sisbLogo} alt="SISB Logo" className="h-10 w-auto" />
+              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-10 w-auto" />
               <div>
                 <h1 className={`text-lg font-bold text-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>Payment Portal</h1>
               </div>
