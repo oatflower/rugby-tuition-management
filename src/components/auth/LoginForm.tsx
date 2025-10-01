@@ -25,7 +25,7 @@ interface LoginFormProps {
 
 const ssoProviders = [
   { 
-    name: "SchoolBase", 
+    name: "Touchline", 
     icon: FaGraduationCap, 
     color: "bg-green-500 hover:bg-green-600 text-white"
   },
