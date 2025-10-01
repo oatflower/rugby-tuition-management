@@ -5,7 +5,7 @@ import { ForgotPassword } from "@/components/auth/ForgotPassword";
 import { SignUp } from "@/components/auth/SignUp";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
-import schoolBuilding from "@/assets/school-building-new.jpg";
+import schoolBuilding from "@/assets/rugby-school-building.jpg";
 import sisbLogo from "@/assets/sisb-logo-new.png";
 
 interface LoginProps {
