@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { 
   ShoppingCart, 
@@ -46,21 +44,18 @@ export const ActivityCheckout = ({
   onCancel,
   onRemoveItem 
 }: ActivityCheckoutProps) => {
-  const [useCreditNote, setUseCreditNote] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0]);
   const [showPaymentProcessing, setShowPaymentProcessing] = useState(false);
   const { language, formatCurrency, t } = useLanguage();
 
   // Calculate amounts
   const subtotalAmount = items.reduce((sum, item) => sum + item.price, 0);
-  const creditApplied = useCreditNote ? Math.min(creditBalance, subtotalAmount) : 0;
-  const amountAfterCredit = subtotalAmount - creditApplied;
   
   const paymentFee = selectedPaymentMethod.currency === '%' 
-    ? amountAfterCredit * (selectedPaymentMethod.fee / 100)
+    ? subtotalAmount * (selectedPaymentMethod.fee / 100)
     : selectedPaymentMethod.fee;
   
-  const totalAmount = amountAfterCredit + paymentFee;
+  const totalAmount = subtotalAmount + paymentFee;
 
   const handlePayment = () => {
     setShowPaymentProcessing(true);
@@ -72,7 +67,6 @@ export const ActivityCheckout = ({
         ...paymentData,
         items: items,
         subtotalAmount,
-        creditApplied,
         paymentFee,
         studentName: language === 'th' ? "นักเรียน" : 
                      language === 'zh' ? "学生" : 
@@ -160,35 +154,6 @@ export const ActivityCheckout = ({
               ))}
             </div>
           </div>
-
-          {/* Credit Note Application */}
-          {creditBalance > 0 && (
-            <div className="space-y-4">
-              <h2 className={`text-2xl font-bold ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                {t('portal.applyCreditNote')}
-              </h2>
-              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <Switch
-                    id="credit-toggle"
-                    checked={useCreditNote}
-                    onCheckedChange={setUseCreditNote}
-                  />
-                  <div>
-                    <Label htmlFor="credit-toggle" className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{t('portal.useCreditNote')}</Label>
-                    <p className={`text-sm text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      {t('portal.available')}: {formatCurrency(creditBalance)}
-                    </p>
-                  </div>
-                </div>
-                {useCreditNote && (
-                  <Badge variant="outline" className={`bg-finance-green/20 text-finance-green ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                    -{formatCurrency(creditApplied)}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right Column - Payment Summary */}
@@ -203,13 +168,6 @@ export const ActivityCheckout = ({
                   <span className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{t('portal.subtotal')} ({items.length} {t('portal.items')})</span>
                   <span className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{formatCurrency(subtotalAmount)}</span>
                 </div>
-                
-                {creditApplied > 0 && (
-                  <div className="flex justify-between text-finance-green">
-                    <span className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{t('portal.creditNoteApplied')}</span>
-                    <span className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>-{formatCurrency(creditApplied)}</span>
-                  </div>
-                )}
                 
                 <div className="flex justify-between">
                   <span className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{t('portal.paymentFee')} ({language === 'th' ? selectedPaymentMethod.name :
