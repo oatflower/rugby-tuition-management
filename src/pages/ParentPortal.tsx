@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { 
   Calendar, 
   DollarSign,
@@ -50,7 +48,6 @@ export const ParentPortal = ({
 }: ParentPortalProps) => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'receipts'>('dashboard');
   const [selectedStudent, setSelectedStudent] = useState<string>(mockStudents[0]?.id.toString() || '1');
-  const [paymentPeriod, setPaymentPeriod] = useState<'Yearly' | 'Termly'>('Yearly');
   
   const { t, language, formatCurrency } = useLanguage();
 
@@ -273,36 +270,7 @@ export const ParentPortal = ({
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
               {/* Left 70% - Invoice List */}
               <div className="lg:col-span-7 space-y-4">
-                {/* Payment Period Selector */}
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="space-y-3">
-                      <Label className={`text-base font-semibold ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                        {language === 'th' ? 'เลือกรูปแบบการชำระเงิน' : language === 'zh' ? '选择付款方式' : 'Select Payment Period'}
-                      </Label>
-                      <RadioGroup 
-                        value={paymentPeriod} 
-                        onValueChange={(value) => setPaymentPeriod(value as 'Yearly' | 'Termly')}
-                        className="flex gap-4"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Yearly" id="yearly" />
-                          <Label htmlFor="yearly" className={`cursor-pointer ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                            {language === 'th' ? 'รายปี' : language === 'zh' ? '年度' : 'Yearly'}
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Termly" id="termly" />
-                          <Label htmlFor="termly" className={`cursor-pointer ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                            {language === 'th' ? 'รายเทอม' : language === 'zh' ? '学期' : 'Termly'}
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {allInvoices.filter(invoice => invoice.type === paymentPeriod).map(invoice => {
+                {allInvoices.map(invoice => {
                   const student = mockStudents.find(s => s.id === invoice.student_id);
                   const creditNote = allCreditNotes.find(cn => cn.student_id === invoice.student_id);
                   return (
