@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { X, ShoppingCart, AlertCircle } from "lucide-react";
+import { X, ShoppingCart } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TuitionCartItem {
@@ -46,18 +46,6 @@ export const TuitionCartSidebar = ({ items, onRemoveItem, onCheckout }: TuitionC
             </div>
           ) : (
             <>
-              {/* Important Note */}
-              <div className="bg-warning-orange/10 border border-warning-orange/20 p-3 rounded-lg flex gap-2">
-                <AlertCircle className="h-4 w-4 text-warning-orange flex-shrink-0 mt-0.5" />
-                <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                  {language === 'th' 
-                    ? 'ค่าเล่าเรียนจะแยกจาก After School และ Summer Camp' 
-                    : 'Tuition fees are separate from After School and Summer Camp'}
-                </p>
-              </div>
-
-              <Separator />
-
               {/* Cart Items */}
               <div className="space-y-3 max-h-[300px] overflow-y-auto">
                 {items.map((item) => (
