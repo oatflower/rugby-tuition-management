@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Login } from "./pages/Login";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { ParentPortal } from "./pages/ParentPortal";
 import { CartPage } from "./pages/Cart";
 import { CheckoutPage } from "./pages/Checkout";
@@ -13,19 +13,23 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<'portal' | 'cart' | 'checkout' | 'success'>('portal');
   const [checkoutData, setCheckoutData] = useState<any>(null);
   const [paymentSuccessData, setPaymentSuccessData] = useState<any>(null);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [showCountdown, setShowCountdown] = useState(false);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+  // Simulate loading screen
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500); // 2.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
     setCurrentPage('portal');
   };
 
@@ -128,8 +132,8 @@ const App = () => {
         <LanguageProvider>
           <Toaster />
           <Sonner />
-          {!isLoggedIn ? (
-            <Login onLogin={handleLogin} />
+          {isLoading ? (
+            <LoadingScreen />
           ) : currentPage === 'portal' ? (
             <ParentPortal 
               onLogout={handleLogout} 
