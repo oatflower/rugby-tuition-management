@@ -13,7 +13,7 @@ export const LoadingScreen = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
       {/* Logo Container with Animation */}
       <div className="animate-fade-in space-y-8">
         {/* Logo */}
@@ -29,19 +29,19 @@ export const LoadingScreen = () => {
         <div className="flex flex-col items-center space-y-4">
           {/* Spinning Circle */}
           <div className="relative w-12 h-12">
-            <div className="absolute inset-0 border-4 border-gray-300 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-gray-700 rounded-full"></div>
             <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
 
           {/* Loading Text */}
-          <p className="text-gray-600 text-sm font-medium">
+          <p className="text-gray-300 text-sm font-medium">
             Loading{dots}
           </p>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-8 text-center text-gray-500 text-xs">
+      <div className="absolute bottom-8 text-center text-gray-400 text-xs">
         <p>© 2024 Rugby School Thailand</p>
       </div>
     </div>
