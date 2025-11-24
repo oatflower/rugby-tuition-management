@@ -262,19 +262,12 @@ export const ParentPortal = ({
                 {allInvoices.map(invoice => {
                   const student = mockStudents.find(s => s.id === invoice.student_id);
                   return (
-                    <div key={invoice.id} className="space-y-2">
-                      {/* Student identification tag */}
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={`${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                          {student?.name} - {student?.class}
-                        </Badge>
-                      </div>
-                      <InvoiceCard
-                        invoice={invoice}
-                        onAddToCart={(invoiceId) => handleAddToCart(invoiceId, 'tuition')}
-                        studentName={student?.name}
-                      />
-                    </div>
+                    <InvoiceCard
+                      key={invoice.id}
+                      invoice={invoice}
+                      onAddToCart={(invoiceId) => handleAddToCart(invoiceId, 'tuition')}
+                      studentName={student?.name}
+                    />
                   );
                 })}
               </div>
