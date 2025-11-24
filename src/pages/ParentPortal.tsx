@@ -259,6 +259,11 @@ export const ParentPortal = ({
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
               {/* Left 70% - Invoice List */}
               <div className="lg:col-span-7 space-y-4">
+                <div className="mb-6">
+                  <h2 className={`text-2xl font-bold ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                    {language === 'th' ? 'ใบแจ้งหนี้ปัจจุบัน' : language === 'zh' ? '当前发票' : 'Current Invoice'}
+                  </h2>
+                </div>
                 {allInvoices.map(invoice => {
                   const student = mockStudents.find(s => s.id === invoice.student_id);
                   return (
