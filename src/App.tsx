@@ -8,12 +8,17 @@ import { ParentPortal } from "./pages/ParentPortal";
 import { CartPage } from "./pages/Cart";
 import { CheckoutPage } from "./pages/Checkout";
 import { ActivityPaymentSuccess } from "./components/portal/ActivityPaymentSuccess";
+import { EmailVerification } from "./pages/EmailVerification";
+import { OTPVerification } from "./pages/OTPVerification";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [showOTP, setShowOTP] = useState(false);
   const [currentPage, setCurrentPage] = useState<'portal' | 'cart' | 'checkout' | 'success'>('portal');
   const [checkoutData, setCheckoutData] = useState<any>(null);
   const [paymentSuccessData, setPaymentSuccessData] = useState<any>(null);
@@ -126,6 +131,21 @@ const App = () => {
     setCheckoutData(null);
   };
 
+  const handleEmailVerified = (email: string) => {
+    setUserEmail(email);
+    setShowOTP(true);
+  };
+
+  const handleOTPVerified = () => {
+    setIsAuthenticated(true);
+    setShowOTP(false);
+  };
+
+  const handleBackToEmail = () => {
+    setShowOTP(false);
+    setUserEmail("");
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -134,6 +154,16 @@ const App = () => {
           <Sonner />
           {isLoading ? (
             <LoadingScreen />
+          ) : !isAuthenticated ? (
+            showOTP ? (
+              <OTPVerification
+                email={userEmail}
+                onOTPVerified={handleOTPVerified}
+                onBack={handleBackToEmail}
+              />
+            ) : (
+              <EmailVerification onEmailVerified={handleEmailVerified} />
+            )
           ) : currentPage === 'portal' ? (
             <ParentPortal 
               onLogout={handleLogout} 
