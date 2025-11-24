@@ -17,7 +17,7 @@ import {
   Receipt,
   AlertCircle
 } from "lucide-react";
-import { mockStudents, getMockDataForStudent, mockInvoices, mockCreditNotes, mockReceipts, mandatoryCourses } from "@/data/mockData";
+import { mockStudents, getMockDataForStudent, mockInvoices, mockReceipts, mandatoryCourses } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -56,14 +56,12 @@ export const ParentPortal = ({
   
   // Get combined data for all students
   const allInvoices = mockInvoices;
-  const allCreditNotes = mockCreditNotes;
   const allReceipts = mockReceipts;
   
   // Calculate combined statistics
   const stats = {
     outstandingInvoices: allInvoices.filter(inv => inv.status === 'pending').length,
     paidThisTerm: allInvoices.filter(inv => inv.status === 'paid').length,
-    creditBalance: allCreditNotes.reduce((sum, cn) => sum + cn.balance, 0),
     availableCourses: 15,
   };
   
@@ -193,7 +191,7 @@ export const ParentPortal = ({
           {/* Dashboard Tab - Combined data for all students with student tags */}
           <TabsContent value="dashboard" className="space-y-6">
             {/* Summary Stats - Combined across all students */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SummaryBox
                 title={t('portal.outstandingInvoices')}
                 value={formatCurrency(outstandingAmount)}
@@ -209,15 +207,6 @@ export const ParentPortal = ({
                 subtitle={t('portal.completedPayments')}
                 icon={CreditCard}
                 color="success"
-                onClick={() => setActiveTab('tuition')}
-              />
-              
-              <SummaryBox
-                title={language === 'th' ? 'ใบลดหนี้' : 'Credit Note'}
-                value={formatCurrency(stats.creditBalance)}
-                subtitle={t('portal.availableCredit')}
-                icon={Receipt}
-                color="info"
                 onClick={() => setActiveTab('tuition')}
               />
             </div>
@@ -272,7 +261,6 @@ export const ParentPortal = ({
               <div className="lg:col-span-7 space-y-4">
                 {allInvoices.map(invoice => {
                   const student = mockStudents.find(s => s.id === invoice.student_id);
-                  const creditNote = allCreditNotes.find(cn => cn.student_id === invoice.student_id);
                   return (
                     <div key={invoice.id} className="space-y-2">
                       {/* Student identification tag */}
@@ -283,7 +271,6 @@ export const ParentPortal = ({
                       </div>
                       <InvoiceCard
                         invoice={invoice}
-                        creditBalance={creditNote?.balance || 0}
                         onAddToCart={(invoiceId) => handleAddToCart(invoiceId, 'tuition')}
                         studentName={student?.name}
                       />

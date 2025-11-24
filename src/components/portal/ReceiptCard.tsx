@@ -1,14 +1,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Calendar, DollarSign, CreditCard, FileText } from "lucide-react";
+import { Download, Calendar, DollarSign, CreditCard } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Receipt {
   id: string;
   invoice_id: string;
   amount: number;
-  payment_method: 'credit_card' | 'bank_transfer' | 'credit_note' | 'cash';
+  payment_method: 'credit_card' | 'bank_transfer' | 'cash';
   paid_at: string;
   receipt_url: string;
   status: 'completed' | 'processing' | 'failed';
@@ -26,7 +26,6 @@ export const ReceiptCard = ({ receipt, onDownload }: ReceiptCardProps) => {
   const paymentMethodConfig = {
     credit_card: { label: 'Credit Card', icon: CreditCard, color: 'bg-primary/20 text-primary' },
     bank_transfer: { label: 'Bank Transfer', icon: DollarSign, color: 'bg-finance-green/20 text-finance-green' },
-    credit_note: { label: 'Credit Note', icon: FileText, color: 'bg-info-cyan/20 text-info-cyan' },
     cash: { label: 'Cash', icon: DollarSign, color: 'bg-warning-orange/20 text-warning-orange' },
   };
 
