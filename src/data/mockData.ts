@@ -51,7 +51,7 @@ export const mockInvoices = [
     amount_due: 15500,
     due_date: "2024-12-15",
     status: "pending" as const,
-    description: "Tuition Fee 2024-2025",
+    description: "Tuition Fee Invoice Number #INV-2024-001",
     term: "Academic Year 2024-2025"
   },
   {
@@ -61,7 +61,7 @@ export const mockInvoices = [
     amount_due: 15500,
     due_date: "2024-12-15",
     status: "paid" as const,
-    description: "Tuition Fee 2024-2025",
+    description: "Tuition Fee Invoice Number #INV-2024-005",
     term: "Academic Year 2024-2025"
   },
   {
@@ -71,7 +71,7 @@ export const mockInvoices = [
     amount_due: 15500,
     due_date: "2024-12-15",
     status: "pending" as const,
-    description: "Tuition Fee 2024-2025",
+    description: "Tuition Fee Invoice Number #INV-2024-006",
     term: "Academic Year 2024-2025"
   }
 ];
