@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronDown, User, Settings, CreditCard, Bell, LogOut } from "lucide-react";
+import { ChevronDown, User, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,25 +64,6 @@ export const ParentAccountSelector = ({ onAccountSettings, onLogout }: ParentAcc
             </div>
           </div>
         </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onAccountSettings} className="cursor-pointer">
-          <Settings className="h-4 w-4 mr-2" />
-          <span className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
-            {t('portal.accountSettings')}
-          </span>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <CreditCard className="h-4 w-4 mr-2" />
-          <span className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
-            {t('portal.paymentMethods')}
-          </span>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <Bell className="h-4 w-4 mr-2" />
-          <span className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
-            {t('portal.notificationSettings')}
-          </span>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive focus:text-destructive">
           <LogOut className="h-4 w-4 mr-2" />
