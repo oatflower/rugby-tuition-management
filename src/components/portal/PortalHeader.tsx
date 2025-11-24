@@ -48,27 +48,9 @@ export const PortalHeader = ({
       id: 2,
       message: "Payment received for February",
       date: "2024-02-15"
-    }],
-    extraActivities: [{
-      id: 3,
-      message: "Soccer practice cancelled today",
-      date: "2024-03-04"
-    }, {
-      id: 4,
-      message: "Art class registration open",
-      date: "2024-03-02"
-    }],
-    others: [{
-      id: 5,
-      message: "Parent-teacher conference scheduled",
-      date: "2024-03-10"
-    }, {
-      id: 6,
-      message: "School holiday announcement",
-      date: "2024-03-01"
     }]
   };
-  const totalNotifications = notifications.tuitionPayment.length + notifications.extraActivities.length + notifications.others.length;
+  const totalNotifications = notifications.tuitionPayment.length;
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const days = ['day.sunday', 'day.monday', 'day.tuesday', 'day.wednesday', 'day.thursday', 'day.friday', 'day.saturday'];
@@ -117,49 +99,15 @@ export const PortalHeader = ({
                   <DialogHeader>
                     <DialogTitle className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>{t('portal.notifications')}</DialogTitle>
                   </DialogHeader>
-                  <Tabs defaultValue="tuitionPayment" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="tuitionPayment" className={`text-xs ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                        {t('portal.tuitionPayment')}
-                        {notifications.tuitionPayment.length > 0 && <Badge variant="secondary" className="ml-1 h-4 w-4 p-0 text-xs">
-                            {notifications.tuitionPayment.length}
-                          </Badge>}
-                      </TabsTrigger>
-                      <TabsTrigger value="extraActivities" className={`text-xs ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                        {t('portal.extraActivities')}
-                        {notifications.extraActivities.length > 0 && <Badge variant="secondary" className="ml-1 h-4 w-4 p-0 text-xs">
-                            {notifications.extraActivities.length}
-                          </Badge>}
-                      </TabsTrigger>
-                      <TabsTrigger value="others" className={`text-xs ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                        {t('portal.others')}
-                        {notifications.others.length > 0 && <Badge variant="secondary" className="ml-1 h-4 w-4 p-0 text-xs">
-                            {notifications.others.length}
-                          </Badge>}
-                      </TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="tuitionPayment" className="space-y-2 mt-4">
-                      {notifications.tuitionPayment.map(notification => <div key={notification.id} className="p-3 bg-muted rounded-lg">
-                          <p className={`text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{notification.message}</p>
-                          <p className={`text-xs text-muted-foreground mt-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{formatDate(notification.date)}</p>
-                        </div>)}
-                    </TabsContent>
-                    
-                    <TabsContent value="extraActivities" className="space-y-2 mt-4">
-                      {notifications.extraActivities.map(notification => <div key={notification.id} className="p-3 bg-muted rounded-lg">
-                          <p className={`text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{notification.message}</p>
-                          <p className={`text-xs text-muted-foreground mt-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{formatDate(notification.date)}</p>
-                        </div>)}
-                    </TabsContent>
-                    
-                    <TabsContent value="others" className="space-y-2 mt-4">
-                      {notifications.others.map(notification => <div key={notification.id} className="p-3 bg-muted rounded-lg">
-                          <p className={`text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{notification.message}</p>
-                          <p className={`text-xs text-muted-foreground mt-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{formatDate(notification.date)}</p>
-                        </div>)}
-                    </TabsContent>
-                  </Tabs>
+                  <div className="space-y-2 mt-4">
+                    <h3 className={`font-semibold mb-3 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                      {t('portal.tuitionPayment')}
+                    </h3>
+                    {notifications.tuitionPayment.map(notification => <div key={notification.id} className="p-3 bg-muted rounded-lg">
+                        <p className={`text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{notification.message}</p>
+                        <p className={`text-xs text-muted-foreground mt-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{formatDate(notification.date)}</p>
+                      </div>)}
+                  </div>
                 </DialogContent>
               </Dialog>
             </div>
