@@ -133,7 +133,8 @@ const App = () => {
 
   const handleEmailVerified = (email: string) => {
     setUserEmail(email);
-    setShowOTP(true);
+    // Bypass OTP - go directly to portal
+    setIsAuthenticated(true);
   };
 
   const handleOTPVerified = () => {
