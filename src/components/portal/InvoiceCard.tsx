@@ -13,6 +13,7 @@ interface InvoiceCardProps {
     status: 'pending' | 'overdue' | 'paid' | 'partial';
     description: string;
     term?: string;
+    student_id?: number;
   };
   onAddToCart?: (invoiceId: string) => void;
   studentName?: string;
@@ -50,10 +51,8 @@ export const InvoiceCard = ({ invoice, onAddToCart, studentName }: InvoiceCardPr
             {studentName && (
               <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
                 {t('portal.student')}: {studentName}
+                {invoice.student_id && ` (ID: ${invoice.student_id})`}
               </p>
-            )}
-            {invoice.term && (
-              <p className={`text-sm text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{invoice.term}</p>
             )}
           </div>
           
