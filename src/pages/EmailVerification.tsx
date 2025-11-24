@@ -80,8 +80,8 @@ export const EmailVerification = ({ onEmailVerified }: EmailVerificationProps) =
         {/* Logo */}
         <div className="flex justify-center">
           <img 
-            src="/src/assets/sisb-logo-new.png" 
-            alt="SISB Logo" 
+            src="/src/assets/rugby-logo-full.jpg" 
+            alt="Rugby School Thailand" 
             className="h-20 w-auto"
           />
         </div>
