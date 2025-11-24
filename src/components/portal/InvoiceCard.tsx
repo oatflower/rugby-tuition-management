@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, DollarSign, AlertCircle, CheckCircle } from "lucide-react";
+import { Calendar, DollarSign, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface InvoiceCardProps {
@@ -14,14 +14,12 @@ interface InvoiceCardProps {
     description: string;
     term?: string;
   };
-  creditBalance?: number;
   onAddToCart?: (invoiceId: string) => void;
   studentName?: string;
 }
 
-export const InvoiceCard = ({ invoice, creditBalance = 0, onAddToCart, studentName }: InvoiceCardProps) => {
+export const InvoiceCard = ({ invoice, onAddToCart, studentName }: InvoiceCardProps) => {
   const isOverdue = new Date(invoice.due_date) < new Date() && invoice.status !== 'paid';
-  const canPayWithCredit = creditBalance >= invoice.amount_due;
   const { language, formatCurrency, t } = useLanguage();
   
   const statusConfig = {
@@ -81,25 +79,10 @@ export const InvoiceCard = ({ invoice, creditBalance = 0, onAddToCart, studentNa
               {formatCurrency(invoice.amount_due)}
             </span>
           </div>
-          
-          {creditBalance > 0 && invoice.status !== 'paid' && (
-            <div className="flex items-center justify-between text-sm">
-              <span className={`text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{t('invoice.availableCredit')}:</span>
-              <span className={`text-finance-green font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                {formatCurrency(creditBalance)}
-              </span>
-            </div>
-          )}
         </div>
 
         {invoice.status !== 'paid' && (
           <div className="pt-2 space-y-2">
-            {canPayWithCredit && (
-              <div className={`flex items-center gap-2 text-sm text-finance-green bg-finance-green/10 p-2 rounded ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                <CheckCircle className="h-4 w-4" />
-                <span>{t('invoice.canPayWithCredit')}</span>
-              </div>
-            )}
             
             <Button 
               className={`w-full ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}

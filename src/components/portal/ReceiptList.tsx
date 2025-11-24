@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Receipt, CreditCard, DollarSign, FileText } from "lucide-react";
+import { Download, Receipt, CreditCard, DollarSign } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Select,
@@ -18,7 +18,7 @@ interface Receipt {
   studentName: string;
   year: string;
   amount: number;
-  payment_method: 'credit_card' | 'bank_transfer' | 'credit_note' | 'cash';
+  payment_method: 'credit_card' | 'bank_transfer' | 'cash';
   paid_at: string;
   receipt_url: string;
   status: 'completed' | 'processing' | 'failed';
@@ -58,11 +58,6 @@ export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
       label: t('payment.bankTransfer'), 
       icon: DollarSign, 
       gradient: 'from-green-500 to-emerald-600' 
-    },
-    credit_note: { 
-      label: t('payment.creditNote'), 
-      icon: FileText, 
-      gradient: 'from-orange-500 to-amber-600' 
     },
     cash: { 
       label: t('payment.cash'), 
@@ -198,7 +193,6 @@ export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
                     className={`gap-1 ${
                       receipt.payment_method === 'credit_card' ? 'border-blue-200 text-blue-700 bg-blue-50' :
                       receipt.payment_method === 'bank_transfer' ? 'border-green-200 text-green-700 bg-green-50' :
-                      receipt.payment_method === 'credit_note' ? 'border-orange-200 text-orange-700 bg-orange-50' :
                       'border-gray-200 text-gray-700 bg-gray-50'
                     }`}
                   >

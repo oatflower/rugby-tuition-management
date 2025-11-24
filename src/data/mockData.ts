@@ -76,11 +76,6 @@ export const mockInvoices = [
   }
 ];
 
-export const mockCreditNotes = [
-  { id: 1, student_id: 1, balance: 500 },
-  { id: 2, student_id: 2, balance: 1200 },
-  { id: 3, student_id: 3, balance: 0 },
-];
 
 // Student-specific course data
 export const mockCoursesData = {
@@ -386,7 +381,7 @@ export const mockReceipts = [
     studentName: "Sophia Johnson",
     year: "2024",
     amount: 450,
-    payment_method: "credit_note" as const,
+    payment_method: "bank_transfer" as const,
     paid_at: "2024-08-20T09:45:00Z",
     receipt_url: "#",
     status: "completed" as const,
@@ -439,11 +434,9 @@ export const mockReceipts = [
 
 export const getMockDataForStudent = (studentId: number) => {
   const invoices = mockInvoices.filter(inv => inv.student_id === studentId);
-  const creditNote = mockCreditNotes.find(cn => cn.student_id === studentId);
   
   return {
     invoices,
-    creditBalance: creditNote?.balance || 0,
     courses: mockCoursesData[studentId] || mockCoursesData[1],
     summerActivities: mockSummerActivitiesData[studentId] || mockSummerActivitiesData[1],
     receipts: mockReceipts
