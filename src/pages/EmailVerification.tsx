@@ -66,22 +66,10 @@ export const EmailVerification = ({ onEmailVerified }: EmailVerificationProps) =
 
     setIsChecking(true);
 
-    // Simulate API call
+    // Simulate API call - BYPASSED: All emails proceed to OTP
     setTimeout(() => {
-      const isWhitelisted = mockWhitelist.includes(email.toLowerCase());
-
-      if (isWhitelisted) {
-        // Email found - proceed to OTP
-        onEmailVerified(email);
-      } else {
-        // Email not found
-        toast({
-          variant: "destructive",
-          title: t.notFound,
-          description: t.contactAdmin,
-        });
-      }
-
+      // Bypass whitelist check - all emails proceed
+      onEmailVerified(email);
       setIsChecking(false);
     }, 1000);
   };
