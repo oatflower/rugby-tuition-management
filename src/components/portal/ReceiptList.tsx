@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Receipt, CreditCard, DollarSign } from "lucide-react";
+import { Download, Receipt, CreditCard, DollarSign, CalendarIcon, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { format } from "date-fns";
 import {
   Select,
   SelectContent,
@@ -10,6 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 interface Receipt {
   id: string;
@@ -33,19 +41,21 @@ interface ReceiptListProps {
 
 export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
   const { language, formatCurrency, t } = useLanguage();
-  const [selectedYear, setSelectedYear] = useState<string>("all");
+  const [selectedMonth, setSelectedMonth] = useState<Date | undefined>(undefined);
   const [selectedStudent, setSelectedStudent] = useState<string>("all");
 
-  // Extract unique years and students for filters
-  const years = Array.from(new Set(receipts.map(r => r.year))).sort((a, b) => b.localeCompare(a));
+  // Extract unique students for filters
   const students = Array.from(new Set(receipts.map(r => ({ id: r.student_id, name: r.studentName }))))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  // Filter receipts based on selected year and student
+  // Filter receipts based on selected month and student
   const filteredReceipts = receipts.filter(receipt => {
-    const yearMatch = selectedYear === "all" || receipt.year === selectedYear;
+    const monthMatch = !selectedMonth || (
+      new Date(receipt.paid_at).getMonth() === selectedMonth.getMonth() &&
+      new Date(receipt.paid_at).getFullYear() === selectedMonth.getFullYear()
+    );
     const studentMatch = selectedStudent === "all" || receipt.student_id.toString() === selectedStudent;
-    return yearMatch && studentMatch;
+    return monthMatch && studentMatch;
   });
 
   const paymentMethodConfig = {
@@ -80,19 +90,47 @@ export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
       <div className="flex flex-wrap gap-4 items-center">
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-            {language === 'th' ? 'ปี:' : 'Year:'}
+            {language === 'th' ? 'เดือน:' : language === 'zh' ? '月份:' : 'Month:'}
           </span>
-          <Select value={selectedYear} onValueChange={setSelectedYear}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-background z-50">
-              <SelectItem value="all">{language === 'th' ? 'ทั้งหมด' : 'All Years'}</SelectItem>
-              {years.map(year => (
-                <SelectItem key={year} value={year}>{year}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal",
+                  !selectedMonth && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedMonth ? (
+                  format(selectedMonth, "MMMM yyyy")
+                ) : (
+                  <span>{language === 'th' ? 'เลือกเดือน' : language === 'zh' ? '选择月份' : 'Pick a month'}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedMonth}
+                onSelect={setSelectedMonth}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+              {selectedMonth && (
+                <div className="p-3 border-t">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-center"
+                    onClick={() => setSelectedMonth(undefined)}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    {language === 'th' ? 'ล้างตัวกรอง' : language === 'zh' ? '清除筛选' : 'Clear filter'}
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="flex items-center gap-2">
