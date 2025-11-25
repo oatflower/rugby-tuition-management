@@ -275,6 +275,40 @@ export const ParentPortal = ({
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
               {/* Left 70% - Invoice List */}
               <div className="lg:col-span-7 space-y-4">
+                {/* Credit Note Summary */}
+                {totalCreditNotes > 0 && (
+                  <Card 
+                    className="bg-primary/10 border-primary/20 cursor-pointer hover:bg-primary/15 transition-colors"
+                    onClick={() => setIsCreditNoteModalOpen(true)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-primary/20 rounded-lg">
+                            <Receipt className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className={`text-sm font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              {t('portal.creditNotes')}
+                            </p>
+                            <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              {allCreditNotes.filter(n => n.status === 'active').length} {t('portal.available')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-2xl font-bold text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                            {formatCurrency(totalCreditNotes)}
+                          </p>
+                          <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                            {language === 'th' ? 'คลิกเพื่อดูรายละเอียด' : language === 'zh' ? '点击查看详情' : 'Click to view details'}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 <div className="mb-6">
                   <h2 className={`text-2xl font-bold ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
                     {language === 'th' ? 'ใบแจ้งหนี้ปัจจุบัน' : language === 'zh' ? '当前发票' : 'Current Invoice'}
