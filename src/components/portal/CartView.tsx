@@ -134,6 +134,42 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Side - Cart Items */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Credit Notes */}
+              {activeCreditNotes.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className={`text-lg flex items-center gap-2 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                      <Receipt className="h-5 w-5" />
+                      {t('portal.creditNotes')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {activeCreditNotes.map((note) => (
+                        <div key={note.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-accent/50 transition-colors">
+                          <Checkbox
+                            checked={selectedCreditNotes.includes(note.id)}
+                            onCheckedChange={() => handleCreditNoteToggle(note.id)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              {note.details}
+                            </p>
+                            <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              {note.id}
+                            </p>
+                          </div>
+                          <span className={`text-sm font-bold text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                            -{formatCurrency(note.amount)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Select All Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -209,42 +245,6 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
 
             {/* Right Side - Summary */}
             <div className="space-y-6">
-              {/* Credit Notes */}
-              {activeCreditNotes.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className={`text-lg flex items-center gap-2 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      <Receipt className="h-5 w-5" />
-                      {t('portal.creditNotes')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {activeCreditNotes.map((note) => (
-                        <div key={note.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-accent/50 transition-colors">
-                          <Checkbox
-                            checked={selectedCreditNotes.includes(note.id)}
-                            onCheckedChange={() => handleCreditNoteToggle(note.id)}
-                            className="mt-1"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                              {note.details}
-                            </p>
-                            <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                              {note.id}
-                            </p>
-                          </div>
-                          <span className={`text-sm font-bold text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                            -{formatCurrency(note.amount)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Price Details */}
               <Card>
                 <CardHeader>
