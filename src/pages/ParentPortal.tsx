@@ -17,9 +17,10 @@ import {
   Receipt,
   AlertCircle
 } from "lucide-react";
-import { mockStudents, getMockDataForStudent, mockInvoices, mockReceipts, mandatoryCourses } from "@/data/mockData";
+import { mockStudents, getMockDataForStudent, mockInvoices, mockReceipts, mandatoryCourses, mockCreditNotes } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { CreditNoteModal } from "@/components/portal/CreditNoteModal";
 
 interface ParentPortalProps {
   onLogout: () => void;
@@ -48,6 +49,7 @@ export const ParentPortal = ({
 }: ParentPortalProps) => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'receipts'>('dashboard');
   const [selectedStudent, setSelectedStudent] = useState<string>(mockStudents[0]?.id.toString() || '1');
+  const [isCreditNoteModalOpen, setIsCreditNoteModalOpen] = useState(false);
   
   const { t, language, formatCurrency } = useLanguage();
 
@@ -57,6 +59,7 @@ export const ParentPortal = ({
   // Get combined data for all students
   const allInvoices = mockInvoices;
   const allReceipts = mockReceipts;
+  const allCreditNotes = mockCreditNotes;
   
   // Calculate combined statistics
   const stats = {
@@ -72,6 +75,10 @@ export const ParentPortal = ({
   const paidThisTerm = allReceipts
     .filter(rec => rec.status === 'completed')
     .reduce((sum, rec) => sum + rec.amount, 0);
+    
+  const totalCreditNotes = allCreditNotes
+    .filter(note => note.status === 'active')
+    .reduce((sum, note) => sum + note.amount, 0);
     
   const overdueCount = 0;
 
@@ -191,7 +198,7 @@ export const ParentPortal = ({
           {/* Dashboard Tab - Combined data for all students with student tags */}
           <TabsContent value="dashboard" className="space-y-6">
             {/* Summary Stats - Combined across all students */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <SummaryBox
                 title={t('portal.outstandingInvoices')}
                 value={formatCurrency(outstandingAmount)}
@@ -208,6 +215,15 @@ export const ParentPortal = ({
                 icon={CreditCard}
                 color="success"
                 onClick={() => setActiveTab('tuition')}
+              />
+
+              <SummaryBox
+                title={t('portal.creditNotes')}
+                value={formatCurrency(totalCreditNotes)}
+                subtitle={`${allCreditNotes.filter(n => n.status === 'active').length} ${t('portal.available')}`}
+                icon={Receipt}
+                color="info"
+                onClick={() => setIsCreditNoteModalOpen(true)}
               />
             </div>
 
@@ -304,6 +320,12 @@ export const ParentPortal = ({
         </Tabs>
       </main>
 
+      <CreditNoteModal
+        isOpen={isCreditNoteModalOpen}
+        onClose={() => setIsCreditNoteModalOpen(false)}
+        creditNotes={allCreditNotes}
+        students={mockStudents}
+      />
     </div>
   );
 };
