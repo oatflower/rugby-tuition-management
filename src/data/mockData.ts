@@ -76,6 +76,45 @@ export const mockInvoices = [
   }
 ];
 
+export const mockCreditNotes = [
+  {
+    id: "CN-2024-001",
+    student_id: 1,
+    amount: 2500,
+    details: "Refund for cancelled swimming course",
+    timestamp: "2024-11-15T10:30:00",
+    status: "active" as const,
+    expiry_date: "2025-12-31"
+  },
+  {
+    id: "CN-2024-002",
+    student_id: 2,
+    amount: 1800,
+    details: "Overpayment adjustment from previous term",
+    timestamp: "2024-11-10T14:20:00",
+    status: "active" as const,
+    expiry_date: "2025-12-31"
+  },
+  {
+    id: "CN-2024-003",
+    student_id: 1,
+    amount: 500,
+    details: "Discount from early payment promotion",
+    timestamp: "2024-10-25T09:15:00",
+    status: "active" as const,
+    expiry_date: "2025-06-30"
+  },
+  {
+    id: "CN-2024-004",
+    student_id: 3,
+    amount: 3200,
+    details: "Refund for cancelled robotics workshop",
+    timestamp: "2024-11-01T11:45:00",
+    status: "active" as const,
+    expiry_date: "2025-12-31"
+  }
+];
+
 
 // Student-specific course data
 export const mockCoursesData = {
