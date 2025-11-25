@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { X, CheckCircle2, ArrowLeft } from "lucide-react";
+import { X, CheckCircle2, ArrowLeft, Receipt } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PaymentProgressBar } from "./PaymentProgressBar";
+import { mockCreditNotes } from "@/data/mockData";
 
 interface CartItem {
   id: string;
@@ -27,6 +28,12 @@ interface CartViewProps {
 export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewProps) => {
   const { t, language, formatCurrency } = useLanguage();
   const [selectedItems, setSelectedItems] = useState<string[]>(items.map(item => item.id));
+  
+  // Get active credit notes and select all by default
+  const activeCreditNotes = mockCreditNotes.filter(note => note.status === 'active');
+  const [selectedCreditNotes, setSelectedCreditNotes] = useState<string[]>(
+    activeCreditNotes.map(note => note.id)
+  );
 
   const handleSelectAll = () => {
     if (selectedItems.length === items.length) {
@@ -46,6 +53,22 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
 
   const selectedCartItems = items.filter(item => selectedItems.includes(item.id));
   const subtotal = selectedCartItems.reduce((sum, item) => sum + item.price, 0);
+  
+  // Calculate total credit from selected credit notes
+  const totalCredit = activeCreditNotes
+    .filter(note => selectedCreditNotes.includes(note.id))
+    .reduce((sum, note) => sum + note.amount, 0);
+  
+  // Calculate final total (subtotal minus credit, minimum 0)
+  const finalTotal = Math.max(0, subtotal - totalCredit);
+  
+  const handleCreditNoteToggle = (noteId: string) => {
+    setSelectedCreditNotes(prev =>
+      prev.includes(noteId)
+        ? prev.filter(id => id !== noteId)
+        : [...prev, noteId]
+    );
+  };
 
   // Group items by student
   const groupedItems = items.reduce((groups, item) => {
@@ -186,6 +209,42 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
 
             {/* Right Side - Summary */}
             <div className="space-y-6">
+              {/* Credit Notes */}
+              {activeCreditNotes.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className={`text-lg flex items-center gap-2 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                      <Receipt className="h-5 w-5" />
+                      {t('portal.creditNotes')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {activeCreditNotes.map((note) => (
+                        <div key={note.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-accent/50 transition-colors">
+                          <Checkbox
+                            checked={selectedCreditNotes.includes(note.id)}
+                            onCheckedChange={() => handleCreditNoteToggle(note.id)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              {note.details}
+                            </p>
+                            <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              {note.id}
+                            </p>
+                          </div>
+                          <span className={`text-sm font-bold text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                            -{formatCurrency(note.amount)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Price Details */}
               <Card>
                 <CardHeader>
@@ -204,6 +263,17 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
                       </span>
                     </div>
                     
+                    {totalCredit > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className={`text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                          {t('portal.creditApplied')}
+                        </span>
+                        <span className={`font-medium text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                          -{formatCurrency(totalCredit)}
+                        </span>
+                      </div>
+                    )}
+                    
                     <Separator />
                     
                     <div className="flex justify-between items-center">
@@ -211,7 +281,7 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
                         {t('portal.totalAmount')}
                       </span>
                       <span className={`text-xl font-bold text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                        {formatCurrency(subtotal)}
+                        {formatCurrency(finalTotal)}
                       </span>
                     </div>
                   </div>
