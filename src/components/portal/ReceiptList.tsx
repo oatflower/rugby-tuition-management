@@ -32,6 +32,11 @@ interface Receipt {
   status: 'completed' | 'processing' | 'failed';
   description: string;
   reference_number: string;
+  applied_credit_notes?: Array<{
+    id: string;
+    amount: number;
+    details: string;
+  }>;
 }
 
 interface ReceiptListProps {
@@ -204,6 +209,15 @@ export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
                     <p className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
                       Ref: {receipt.reference_number}
                     </p>
+                    {receipt.applied_credit_notes && receipt.applied_credit_notes.length > 0 && (
+                      <div className="mt-1 space-y-0.5">
+                        {receipt.applied_credit_notes.map((credit, index) => (
+                          <p key={index} className={`text-xs text-green-600 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                            {language === 'th' ? '✓ ใช้ Credit Note' : language === 'zh' ? '✓ 已使用信用票据' : '✓ Credit Note Applied'}: {credit.details} (-{formatCurrency(credit.amount)})
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

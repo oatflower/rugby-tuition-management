@@ -397,7 +397,19 @@ export const mockReceipts = [
     receipt_url: "#",
     status: "completed" as const,
     description: "September Tuition Payment",
-    reference_number: "TXN-20240828-001"
+    reference_number: "TXN-20240828-001",
+    applied_credit_notes: [
+      {
+        id: "CN-2024-001",
+        amount: 500,
+        details: "Early Payment Discount"
+      },
+      {
+        id: "CN-2024-002",
+        amount: 300,
+        details: "Sibling Discount"
+      }
+    ]
   },
   {
     id: "REC-2024-002",
@@ -411,7 +423,14 @@ export const mockReceipts = [
     receipt_url: "#",
     status: "completed" as const,
     description: "Activity Registration Fee",
-    reference_number: "TXN-20240825-002"
+    reference_number: "TXN-20240825-002",
+    applied_credit_notes: [
+      {
+        id: "CN-2024-003",
+        amount: 150,
+        details: "Referral Bonus Credit"
+      }
+    ]
   },
   {
     id: "REC-2024-003",
