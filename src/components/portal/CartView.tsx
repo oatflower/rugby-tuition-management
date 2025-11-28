@@ -130,9 +130,10 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
         .filter(item => selectedItems.includes(item.id))
         .reduce((sum, item) => sum + item.price, 0);
       
-      // Get selected credit notes for this student
+      // Get selected credit notes for this student - sorted by timestamp (FIFO - oldest first)
       const studentCreditNotes = (creditNotesByStudent[studentId] || [])
-        .filter(note => selectedCreditNotes.includes(note.id));
+        .filter(note => selectedCreditNotes.includes(note.id))
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       
       let totalCreditAvailable = studentCreditNotes.reduce((sum, note) => sum + note.amount, 0);
       let creditApplied = Math.min(studentTotal, totalCreditAvailable);

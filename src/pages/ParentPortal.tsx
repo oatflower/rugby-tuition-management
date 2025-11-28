@@ -219,7 +219,6 @@ export const ParentPortal = ({
                 subtitle={t('portal.completedPayments')}
                 icon={CreditCard}
                 color="success"
-                onClick={() => setActiveTab('tuition')}
               />
 
               <SummaryBox

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Receipt, ArrowDownCircle, ArrowUpCircle, Calendar, User, Filter } from "lucide-react";
+import { Receipt, ArrowDownCircle, ArrowUpCircle, Calendar, User, Filter, CreditCard } from "lucide-react";
 
 interface CreditNote {
   id: string;
@@ -12,10 +12,10 @@ interface CreditNote {
   details: string;
   timestamp: string;
   status: 'active' | 'used' | 'expired';
-  expiry_date: string;
   used_at?: string;
   used_for?: string;
   academic_year?: string;
+  payment_channel?: 'credit_card' | 'bbl_app' | 'promptpay' | 'wechat' | 'alipay';
 }
 
 interface Student {
@@ -33,11 +33,20 @@ interface CreditNoteHistoryProps {
   students: Student[];
 }
 
+const paymentChannelLabels: Record<string, { en: string; th: string; zh: string }> = {
+  credit_card: { en: 'Credit Card', th: 'บัตรเครดิต', zh: '信用卡' },
+  bbl_app: { en: 'BBL App', th: 'BBL App', zh: 'BBL App' },
+  promptpay: { en: 'PromptPay', th: 'พร้อมเพย์', zh: 'PromptPay' },
+  wechat: { en: 'WeChat Pay', th: 'WeChat Pay', zh: '微信支付' },
+  alipay: { en: 'Alipay', th: 'Alipay', zh: '支付宝' },
+};
+
 export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryProps) => {
   const { t, language, formatCurrency } = useLanguage();
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStudent, setSelectedStudent] = useState<string>("all");
+  const [selectedPaymentChannel, setSelectedPaymentChannel] = useState<string>("all");
 
   // Get unique academic years
   const academicYears = useMemo(() => {
@@ -47,6 +56,17 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
       years.add(year);
     });
     return Array.from(years).sort().reverse();
+  }, [creditNotes]);
+
+  // Get unique payment channels from used credit notes
+  const paymentChannels = useMemo(() => {
+    const channels = new Set<string>();
+    creditNotes.forEach(note => {
+      if (note.payment_channel) {
+        channels.add(note.payment_channel);
+      }
+    });
+    return Array.from(channels);
   }, [creditNotes]);
 
   // Filter credit notes
@@ -65,9 +85,14 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
       // Filter by student
       if (selectedStudent !== "all" && note.student_id.toString() !== selectedStudent) return false;
 
+      // Filter by payment channel (only for used notes)
+      if (selectedPaymentChannel !== "all") {
+        if (note.status !== "used" || note.payment_channel !== selectedPaymentChannel) return false;
+      }
+
       return true;
     });
-  }, [creditNotes, selectedYear, selectedType, selectedStudent]);
+  }, [creditNotes, selectedYear, selectedType, selectedStudent, selectedPaymentChannel]);
 
   // Calculate totals
   const totalIn = filteredCreditNotes
@@ -80,6 +105,12 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
 
   const getStudentInfo = (studentId: number) => {
     return students.find(s => s.id === studentId);
+  };
+
+  const getPaymentChannelLabel = (channel: string) => {
+    const labels = paymentChannelLabels[channel];
+    if (!labels) return channel;
+    return language === 'th' ? labels.th : language === 'zh' ? labels.zh : labels.en;
   };
 
   const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
@@ -95,7 +126,7 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Academic Year Filter */}
             <div className="space-y-2">
               <label className={`text-sm font-medium ${fontClass}`}>
@@ -145,6 +176,26 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
                   {students.map(student => (
                     <SelectItem key={student.id} value={student.id.toString()}>
                       {student.avatar} {student.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Payment Channel Filter */}
+            <div className="space-y-2">
+              <label className={`text-sm font-medium ${fontClass}`}>
+                {language === 'th' ? 'ช่องทางชำระ' : language === 'zh' ? '支付渠道' : 'Payment Channel'}
+              </label>
+              <Select value={selectedPaymentChannel} onValueChange={setSelectedPaymentChannel}>
+                <SelectTrigger>
+                  <SelectValue placeholder={language === 'th' ? 'เลือกช่องทาง' : language === 'zh' ? '选择渠道' : 'Select Channel'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{language === 'th' ? 'ทั้งหมด' : language === 'zh' ? '全部' : 'All Channels'}</SelectItem>
+                  {paymentChannels.map(channel => (
+                    <SelectItem key={channel} value={channel}>
+                      {getPaymentChannelLabel(channel)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -254,7 +305,7 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
                             <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {language === 'th' ? 'วันที่ออก: ' : language === 'zh' ? '发行日期: ' : 'Created: '}
+                                {language === 'th' ? 'วันที่ออก: ' : language === 'zh' ? '发行日期: ' : 'Issued: '}
                                 {new Date(note.timestamp).toLocaleDateString()}
                               </span>
                               <span className="flex items-center gap-1">
@@ -269,10 +320,11 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
                                 {note.used_for && ` - ${note.used_for}`}
                               </div>
                             )}
-                            {!isUsed && (
-                              <div className={`text-xs text-muted-foreground mt-1 ${fontClass}`}>
-                                {language === 'th' ? 'หมดอายุ: ' : language === 'zh' ? '到期日: ' : 'Expires: '}
-                                {new Date(note.expiry_date).toLocaleDateString()}
+                            {isUsed && note.payment_channel && (
+                              <div className={`text-xs text-muted-foreground mt-1 flex items-center gap-1 ${fontClass}`}>
+                                <CreditCard className="h-3 w-3" />
+                                {language === 'th' ? 'ช่องทาง: ' : language === 'zh' ? '支付渠道: ' : 'Channel: '}
+                                {getPaymentChannelLabel(note.payment_channel)}
                               </div>
                             )}
                           </div>
