@@ -80,9 +80,19 @@ export const mockCreditNotes = [
   {
     id: "CN-2024-001",
     student_id: 1,
-    amount: 2500,
+    amount: 5000,
     details: "Refund for cancelled swimming course",
     timestamp: "2024-11-15T10:30:00",
+    status: "active" as const,
+    expiry_date: "2025-12-31",
+    academic_year: "2024"
+  },
+  {
+    id: "CN-2024-005",
+    student_id: 1,
+    amount: 3500,
+    details: "Early payment discount reward",
+    timestamp: "2024-11-20T09:00:00",
     status: "active" as const,
     expiry_date: "2025-12-31",
     academic_year: "2024"
