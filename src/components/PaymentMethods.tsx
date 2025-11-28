@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Smartphone, Building2, QrCode } from "lucide-react";
+import { CreditCard, Smartphone, QrCode } from "lucide-react";
 
 const paymentMethods = [
   {
@@ -27,12 +27,12 @@ const paymentMethods = [
     bgColor: 'bg-blue-50',
   },
   {
-    id: 'bank-counter',
-    title: 'Bank Counter',
-    description: 'Bangkok Bank (BBL)',
-    icon: Building2,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
+    id: 'bbl-app',
+    title: 'BBL App',
+    description: 'Bangkok Bank Mobile Banking',
+    icon: Smartphone,
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-50',
   },
   {
     id: 'promptpay',

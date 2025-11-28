@@ -10,7 +10,6 @@ interface CreditNote {
   details: string;
   timestamp: string;
   status: 'active' | 'used' | 'expired';
-  expiry_date: string;
 }
 
 interface CreditNoteModalProps {
@@ -71,16 +70,6 @@ export const CreditNoteModal = ({ isOpen, onClose, creditNotes, students }: Cred
                         {t('portal.issued')}: {new Date(note.timestamp).toLocaleDateString(
                           language === 'th' ? 'th-TH' : language === 'zh' ? 'zh-CN' : 'en-US',
                           { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
-                        )}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Calendar className="h-3.5 w-3.5" />
-                      <span className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
-                        {t('portal.expires')}: {new Date(note.expiry_date).toLocaleDateString(
-                          language === 'th' ? 'th-TH' : language === 'zh' ? 'zh-CN' : 'en-US',
-                          { year: 'numeric', month: 'short', day: 'numeric' }
                         )}
                       </span>
                     </div>

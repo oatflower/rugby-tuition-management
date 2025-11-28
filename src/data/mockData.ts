@@ -76,6 +76,7 @@ export const mockInvoices = [
   }
 ];
 
+// Credit Notes - No expiry_date, includes payment_channel for used notes
 export const mockCreditNotes = [
   {
     id: "CN-2024-001",
@@ -84,7 +85,6 @@ export const mockCreditNotes = [
     details: "Refund for cancelled swimming course",
     timestamp: "2024-11-15T10:30:00",
     status: "active" as const,
-    expiry_date: "2025-12-31",
     academic_year: "2024"
   },
   {
@@ -94,7 +94,6 @@ export const mockCreditNotes = [
     details: "Early payment discount reward",
     timestamp: "2024-11-20T09:00:00",
     status: "active" as const,
-    expiry_date: "2025-12-31",
     academic_year: "2024"
   },
   {
@@ -104,7 +103,6 @@ export const mockCreditNotes = [
     details: "Overpayment adjustment from previous term",
     timestamp: "2024-11-10T14:20:00",
     status: "active" as const,
-    expiry_date: "2025-12-31",
     academic_year: "2024"
   },
   {
@@ -114,7 +112,6 @@ export const mockCreditNotes = [
     details: "Discount from early payment promotion",
     timestamp: "2024-10-25T09:15:00",
     status: "active" as const,
-    expiry_date: "2025-06-30",
     academic_year: "2024"
   },
   {
@@ -124,7 +121,6 @@ export const mockCreditNotes = [
     details: "Refund for cancelled robotics workshop",
     timestamp: "2024-11-01T11:45:00",
     status: "active" as const,
-    expiry_date: "2025-12-31",
     academic_year: "2024"
   },
   {
@@ -134,10 +130,10 @@ export const mockCreditNotes = [
     details: "Overpayment from Term 2 tuition",
     timestamp: "2023-09-15T10:00:00",
     status: "used" as const,
-    expiry_date: "2024-12-31",
     academic_year: "2023",
     used_at: "2024-01-10T14:30:00",
-    used_for: "January 2024 Tuition Payment"
+    used_for: "January 2024 Tuition Payment",
+    payment_channel: "credit_card" as const
   },
   {
     id: "CN-2023-002",
@@ -146,10 +142,10 @@ export const mockCreditNotes = [
     details: "Sibling discount adjustment",
     timestamp: "2023-08-20T09:00:00",
     status: "used" as const,
-    expiry_date: "2024-12-31",
     academic_year: "2023",
     used_at: "2023-12-05T11:00:00",
-    used_for: "Activity Fee Payment"
+    used_for: "Activity Fee Payment",
+    payment_channel: "bbl_app" as const
   },
   {
     id: "CN-2023-003",
@@ -158,10 +154,10 @@ export const mockCreditNotes = [
     details: "Scholarship credit adjustment",
     timestamp: "2023-07-01T08:00:00",
     status: "used" as const,
-    expiry_date: "2024-06-30",
     academic_year: "2023",
     used_at: "2023-11-15T16:00:00",
-    used_for: "Term 1 Tuition Payment"
+    used_for: "Term 1 Tuition Payment",
+    payment_channel: "promptpay" as const
   }
 ];
 
@@ -434,6 +430,7 @@ export const mockSummerActivitiesData = {
 export const mockCourses = mockCoursesData[1];
 export const mockSummerActivities = mockSummerActivitiesData[1];
 
+// Receipts with type and credit_note_history for timeline
 export const mockReceipts = [
   {
     id: "REC-2024-001",
@@ -448,6 +445,7 @@ export const mockReceipts = [
     status: "completed" as const,
     description: "September Tuition Payment",
     reference_number: "TXN-20240828-001",
+    type: "tuition" as const,
     applied_credit_notes: [
       {
         id: "CN-2024-001",
@@ -459,6 +457,43 @@ export const mockReceipts = [
         amount: 300,
         details: "Sibling Discount"
       }
+    ],
+    credit_note_history: [
+      {
+        event: "received" as const,
+        credit_note_id: "CN-2024-001",
+        amount: 500,
+        timestamp: "2024-08-15T09:00:00Z",
+        details: "Early Payment Discount"
+      },
+      {
+        event: "received" as const,
+        credit_note_id: "CN-2024-002",
+        amount: 300,
+        timestamp: "2024-08-20T14:00:00Z",
+        details: "Sibling Discount"
+      },
+      {
+        event: "burned" as const,
+        credit_note_id: "CN-2024-001",
+        amount: 500,
+        timestamp: "2024-08-28T10:30:00Z",
+        details: "Applied to September Tuition"
+      },
+      {
+        event: "burned" as const,
+        credit_note_id: "CN-2024-002",
+        amount: 300,
+        timestamp: "2024-08-28T10:30:00Z",
+        details: "Applied to September Tuition"
+      },
+      {
+        event: "paid" as const,
+        amount: 2400,
+        timestamp: "2024-08-28T10:30:00Z",
+        payment_method: "credit_card",
+        details: "Paid via Credit Card"
+      }
     ]
   },
   {
@@ -468,17 +503,41 @@ export const mockReceipts = [
     studentName: "Liam Johnson",
     year: "2024",
     amount: 850,
-    payment_method: "bank_transfer" as const,
+    payment_method: "bbl_app" as const,
     paid_at: "2024-08-25T14:15:00Z",
     receipt_url: "#",
     status: "completed" as const,
     description: "Activity Registration Fee",
     reference_number: "TXN-20240825-002",
+    type: "activity" as const,
     applied_credit_notes: [
       {
         id: "CN-2024-003",
         amount: 150,
         details: "Referral Bonus Credit"
+      }
+    ],
+    credit_note_history: [
+      {
+        event: "received" as const,
+        credit_note_id: "CN-2024-003",
+        amount: 150,
+        timestamp: "2024-08-10T11:00:00Z",
+        details: "Referral Bonus Credit"
+      },
+      {
+        event: "burned" as const,
+        credit_note_id: "CN-2024-003",
+        amount: 150,
+        timestamp: "2024-08-25T14:15:00Z",
+        details: "Applied to Activity Fee"
+      },
+      {
+        event: "paid" as const,
+        amount: 700,
+        timestamp: "2024-08-25T14:15:00Z",
+        payment_method: "bbl_app",
+        details: "Paid via BBL App"
       }
     ]
   },
@@ -489,12 +548,22 @@ export const mockReceipts = [
     studentName: "Sophia Johnson",
     year: "2024",
     amount: 450,
-    payment_method: "bank_transfer" as const,
+    payment_method: "promptpay" as const,
     paid_at: "2024-08-20T09:45:00Z",
     receipt_url: "#",
     status: "completed" as const,
     description: "Summer Camp Registration",
-    reference_number: "TXN-20240820-003"
+    reference_number: "TXN-20240820-003",
+    type: "activity" as const,
+    credit_note_history: [
+      {
+        event: "paid" as const,
+        amount: 450,
+        timestamp: "2024-08-20T09:45:00Z",
+        payment_method: "promptpay",
+        details: "Paid via PromptPay"
+      }
+    ]
   },
   {
     id: "REC-2024-004",
@@ -508,7 +577,17 @@ export const mockReceipts = [
     receipt_url: "#",
     status: "processing" as const,
     description: "Tuition Fee",
-    reference_number: "TXN-20240830-004"
+    reference_number: "TXN-20240830-004",
+    type: "tuition" as const,
+    credit_note_history: [
+      {
+        event: "paid" as const,
+        amount: 12800,
+        timestamp: "2024-08-30T16:20:00Z",
+        payment_method: "credit_card",
+        details: "Processing via Credit Card"
+      }
+    ]
   },
   {
     id: "REC-2023-001",
@@ -517,12 +596,22 @@ export const mockReceipts = [
     studentName: "Liam Johnson",
     year: "2023",
     amount: 2800,
-    payment_method: "bank_transfer" as const,
+    payment_method: "bbl_app" as const,
     paid_at: "2023-08-15T10:30:00Z",
     receipt_url: "#",
     status: "completed" as const,
     description: "August Tuition Payment",
-    reference_number: "TXN-20230815-001"
+    reference_number: "TXN-20230815-001",
+    type: "tuition" as const,
+    credit_note_history: [
+      {
+        event: "paid" as const,
+        amount: 2800,
+        timestamp: "2023-08-15T10:30:00Z",
+        payment_method: "bbl_app",
+        details: "Paid via BBL App"
+      }
+    ]
   },
   {
     id: "REC-2023-002",
@@ -536,7 +625,17 @@ export const mockReceipts = [
     receipt_url: "#",
     status: "completed" as const,
     description: "Yearly Tuition Fee 2023-2024",
-    reference_number: "TXN-20230720-002"
+    reference_number: "TXN-20230720-002",
+    type: "tuition" as const,
+    credit_note_history: [
+      {
+        event: "paid" as const,
+        amount: 15500,
+        timestamp: "2023-07-20T14:15:00Z",
+        payment_method: "credit_card",
+        details: "Paid via Credit Card"
+      }
+    ]
   }
 ];
 
