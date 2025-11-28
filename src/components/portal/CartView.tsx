@@ -6,7 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, CheckCircle2, ArrowLeft, Receipt, User } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { X, CheckCircle2, ArrowLeft, Receipt, User, AlertTriangle, Info } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PaymentProgressBar } from "./PaymentProgressBar";
 import { mockCreditNotes, mockStudents } from "@/data/mockData";
@@ -49,6 +50,13 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
   const applicableCreditNotes = useMemo(() => {
     return activeCreditNotes.filter(note => 
       studentsInCart.includes(note.student_id.toString())
+    );
+  }, [activeCreditNotes, studentsInCart]);
+
+  // Credit notes that cannot be applied (for students not in cart)
+  const nonApplicableCreditNotes = useMemo(() => {
+    return activeCreditNotes.filter(note => 
+      !studentsInCart.includes(note.student_id.toString())
     );
   }, [activeCreditNotes, studentsInCart]);
 
@@ -403,6 +411,31 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
 
             {/* Right Side - Summary */}
             <div className="space-y-6">
+              {/* Warning for non-applicable credit notes */}
+              {nonApplicableCreditNotes.length > 0 && (
+                <Alert variant="default" className="border-orange-300 bg-orange-50">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className={`text-orange-700 ${fontClass}`}>
+                    {language === 'th' 
+                      ? `คุณมี Credit Note ${nonApplicableCreditNotes.length} รายการที่ไม่สามารถใช้ได้ เนื่องจากไม่มีนักเรียนที่เกี่ยวข้องในตะกร้า`
+                      : language === 'zh'
+                      ? `您有 ${nonApplicableCreditNotes.length} 张信用票据无法使用，因为购物车中没有相关学生`
+                      : `You have ${nonApplicableCreditNotes.length} credit note(s) that cannot be applied because the related student is not in cart`
+                    }
+                    <div className="mt-2 space-y-1">
+                      {nonApplicableCreditNotes.map(note => {
+                        const student = getStudentInfo(note.student_id.toString());
+                        return (
+                          <div key={note.id} className="text-xs">
+                            • {note.id}: {formatCurrency(note.amount)} ({student?.name})
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Price Details */}
               <Card>
                 <CardHeader>
@@ -422,24 +455,94 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
                     </div>
                     
                     {totalCreditApplied > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className={`text-muted-foreground ${fontClass}`}>
-                          {t('portal.creditApplied')}
-                        </span>
-                        <span className={`font-medium text-primary ${fontClass}`}>
-                          -{formatCurrency(totalCreditApplied)}
-                        </span>
-                      </div>
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className={`text-muted-foreground ${fontClass}`}>
+                            {t('portal.creditApplied')}
+                          </span>
+                          <span className={`font-medium text-primary ${fontClass}`}>
+                            -{formatCurrency(totalCreditApplied)}
+                          </span>
+                        </div>
+                        
+                        {/* Credit Note Breakdown */}
+                        <div className="pl-3 border-l-2 border-primary/30 space-y-2">
+                          {Object.entries(creditCalculation).map(([studentId, calc]) => {
+                            const student = getStudentInfo(studentId);
+                            const usedCreditNotes = calc.usedCredits.filter(uc => uc.usedAmount > 0);
+                            
+                            if (usedCreditNotes.length === 0) return null;
+                            
+                            return (
+                              <div key={studentId} className="space-y-1">
+                                <p className={`text-xs font-medium text-muted-foreground ${fontClass}`}>
+                                  {student?.avatar} {student?.name}
+                                </p>
+                                {usedCreditNotes.map(uc => {
+                                  const note = applicableCreditNotes.find(n => n.id === uc.id);
+                                  const isPartial = uc.usedAmount < uc.amount;
+                                  return (
+                                    <div key={uc.id} className="flex justify-between text-xs">
+                                      <span className={`text-muted-foreground ${fontClass}`}>
+                                        {uc.id}
+                                        {isPartial && (
+                                          <span className="text-orange-600 ml-1">
+                                            ({language === 'th' ? 'บางส่วน' : language === 'zh' ? '部分' : 'partial'})
+                                          </span>
+                                        )}
+                                      </span>
+                                      <span className={`text-primary ${fontClass}`}>
+                                        -{formatCurrency(uc.usedAmount)}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
                     )}
 
                     {totalRemainingCredit > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className={`text-orange-600 ${fontClass}`}>
-                          {language === 'th' ? 'Credit คงเหลือ (เก็บไว้ใช้ครั้งหน้า)' : language === 'zh' ? '剩余信用（下次使用）' : 'Remaining Credit (saved for next time)'}
-                        </span>
-                        <span className={`font-medium text-orange-600 ${fontClass}`}>
-                          {formatCurrency(totalRemainingCredit)}
-                        </span>
+                      <div className="p-2 bg-orange-50 rounded-lg border border-orange-200">
+                        <div className="flex items-start gap-2">
+                          <Info className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <div className="flex justify-between text-sm">
+                              <span className={`text-orange-700 font-medium ${fontClass}`}>
+                                {language === 'th' ? 'Credit คงเหลือ' : language === 'zh' ? '剩余信用' : 'Remaining Credit'}
+                              </span>
+                              <span className={`font-bold text-orange-600 ${fontClass}`}>
+                                {formatCurrency(totalRemainingCredit)}
+                              </span>
+                            </div>
+                            <p className={`text-xs text-orange-600 mt-1 ${fontClass}`}>
+                              {language === 'th' 
+                                ? 'เครดิตที่เหลือจะถูกเก็บไว้ใช้ในการชำระเงินครั้งถัดไป'
+                                : language === 'zh'
+                                ? '剩余信用将保存用于下次付款'
+                                : 'Remaining credit will be saved for your next payment'
+                              }
+                            </p>
+                            {/* Breakdown of remaining credits */}
+                            <div className="mt-2 space-y-1">
+                              {Object.entries(creditCalculation).map(([studentId, calc]) => {
+                                const student = getStudentInfo(studentId);
+                                const remainingCredits = calc.usedCredits.filter(uc => uc.amount > uc.usedAmount);
+                                
+                                if (remainingCredits.length === 0) return null;
+                                
+                                return remainingCredits.map(uc => (
+                                  <div key={uc.id} className="flex justify-between text-xs text-orange-600">
+                                    <span>{uc.id} ({student?.name})</span>
+                                    <span>{formatCurrency(uc.amount - uc.usedAmount)}</span>
+                                  </div>
+                                ));
+                              })}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                     
