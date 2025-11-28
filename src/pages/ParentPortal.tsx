@@ -5,6 +5,7 @@ import { SummaryBox } from "@/components/portal/SummaryBox";
 import { InvoiceCard } from "@/components/portal/InvoiceCard";
 import { TuitionCartSidebar } from "@/components/portal/TuitionCartSidebar";
 import { ReceiptList } from "@/components/portal/ReceiptList";
+import { CreditNoteHistory } from "@/components/portal/CreditNoteHistory";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -47,7 +48,7 @@ export const ParentPortal = ({
   onCountdownExpired,
   onCancelCountdown
 }: ParentPortalProps) => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'receipts'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'creditNotes' | 'receipts'>('dashboard');
   const [selectedStudent, setSelectedStudent] = useState<string>(mockStudents[0]?.id.toString() || '1');
   const [isCreditNoteModalOpen, setIsCreditNoteModalOpen] = useState(false);
   
@@ -178,9 +179,9 @@ export const ParentPortal = ({
         />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'receipts')} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')} className="space-y-6">
           {/* Desktop Navigation - Tabs */}
-          <TabsList className="hidden md:grid w-full grid-cols-3 gap-1">
+          <TabsList className="hidden md:grid w-full grid-cols-4 gap-1">
             <TabsTrigger value="dashboard" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
               <GraduationCap className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">{t('portal.dashboard')}</span>
@@ -188,6 +189,10 @@ export const ParentPortal = ({
             <TabsTrigger value="tuition" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
               <DollarSign className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">{t('portal.tuition')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="creditNotes" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
+              <Receipt className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">{language === 'th' ? 'Credit Note' : language === 'zh' ? '信用票据' : 'Credit Note'}</span>
             </TabsTrigger>
             <TabsTrigger value="receipts" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
               <Receipt className="h-4 w-4 md:mr-2" />
@@ -342,6 +347,14 @@ export const ParentPortal = ({
                 />
               </div>
             </div>
+          </TabsContent>
+
+          {/* Credit Notes Tab */}
+          <TabsContent value="creditNotes" className="space-y-6">
+            <CreditNoteHistory 
+              creditNotes={allCreditNotes}
+              students={mockStudents}
+            />
           </TabsContent>
 
           {/* Receipts Tab - Combined data with student identification */}

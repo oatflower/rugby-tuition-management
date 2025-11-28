@@ -84,7 +84,8 @@ export const mockCreditNotes = [
     details: "Refund for cancelled swimming course",
     timestamp: "2024-11-15T10:30:00",
     status: "active" as const,
-    expiry_date: "2025-12-31"
+    expiry_date: "2025-12-31",
+    academic_year: "2024"
   },
   {
     id: "CN-2024-002",
@@ -93,7 +94,8 @@ export const mockCreditNotes = [
     details: "Overpayment adjustment from previous term",
     timestamp: "2024-11-10T14:20:00",
     status: "active" as const,
-    expiry_date: "2025-12-31"
+    expiry_date: "2025-12-31",
+    academic_year: "2024"
   },
   {
     id: "CN-2024-003",
@@ -102,7 +104,8 @@ export const mockCreditNotes = [
     details: "Discount from early payment promotion",
     timestamp: "2024-10-25T09:15:00",
     status: "active" as const,
-    expiry_date: "2025-06-30"
+    expiry_date: "2025-06-30",
+    academic_year: "2024"
   },
   {
     id: "CN-2024-004",
@@ -111,7 +114,44 @@ export const mockCreditNotes = [
     details: "Refund for cancelled robotics workshop",
     timestamp: "2024-11-01T11:45:00",
     status: "active" as const,
-    expiry_date: "2025-12-31"
+    expiry_date: "2025-12-31",
+    academic_year: "2024"
+  },
+  {
+    id: "CN-2023-001",
+    student_id: 1,
+    amount: 1500,
+    details: "Overpayment from Term 2 tuition",
+    timestamp: "2023-09-15T10:00:00",
+    status: "used" as const,
+    expiry_date: "2024-12-31",
+    academic_year: "2023",
+    used_at: "2024-01-10T14:30:00",
+    used_for: "January 2024 Tuition Payment"
+  },
+  {
+    id: "CN-2023-002",
+    student_id: 2,
+    amount: 800,
+    details: "Sibling discount adjustment",
+    timestamp: "2023-08-20T09:00:00",
+    status: "used" as const,
+    expiry_date: "2024-12-31",
+    academic_year: "2023",
+    used_at: "2023-12-05T11:00:00",
+    used_for: "Activity Fee Payment"
+  },
+  {
+    id: "CN-2023-003",
+    student_id: 3,
+    amount: 2000,
+    details: "Scholarship credit adjustment",
+    timestamp: "2023-07-01T08:00:00",
+    status: "used" as const,
+    expiry_date: "2024-06-30",
+    academic_year: "2023",
+    used_at: "2023-11-15T16:00:00",
+    used_for: "Term 1 Tuition Payment"
   }
 ];
 
