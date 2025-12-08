@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Receipt, ArrowDownCircle, ArrowUpCircle, Calendar, User, Filter, CreditCard } from "lucide-react";
+import { Receipt, ArrowDownCircle, ArrowUpCircle, Calendar, User, Filter, CreditCard, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface CreditNote {
   id: string;
@@ -46,7 +47,7 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStudent, setSelectedStudent] = useState<string>("all");
-  
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Get unique academic years
   const academicYears = useMemo(() => {
@@ -75,10 +76,18 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
       // Filter by student
       if (selectedStudent !== "all" && note.student_id.toString() !== selectedStudent) return false;
 
+      // Filter by search query
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchesId = note.id.toLowerCase().includes(query);
+        const matchesDetails = note.details.toLowerCase().includes(query);
+        const matchesUsedFor = note.used_for?.toLowerCase().includes(query);
+        if (!matchesId && !matchesDetails && !matchesUsedFor) return false;
+      }
 
       return true;
     });
-  }, [creditNotes, selectedYear, selectedType, selectedStudent]);
+  }, [creditNotes, selectedYear, selectedType, selectedStudent, searchQuery]);
 
   // Calculate totals
   const totalIn = filteredCreditNotes
@@ -112,6 +121,19 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Search Input */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={language === 'th' ? 'ค้นหา Credit Note (ID, รายละเอียด)...' : language === 'zh' ? '搜索信用票据 (ID, 详情)...' : 'Search Credit Note (ID, details)...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`pl-10 ${fontClass}`}
+              />
+            </div>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Academic Year Filter */}
             <div className="space-y-2">
