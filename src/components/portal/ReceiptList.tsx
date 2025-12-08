@@ -359,6 +359,7 @@ export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
                         <ScrollArea className={receipt.credit_note_history!.length > 3 ? "h-[150px]" : ""}>
                           <div className="space-y-0 relative">
                             {receipt.credit_note_history!
+                              .filter(event => event.event !== 'received')
                               .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
                               .map((event, index, arr) => (
                                 <div key={index} className="flex gap-3 pb-3 last:pb-0">
