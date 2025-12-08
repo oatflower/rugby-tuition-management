@@ -224,3 +224,18 @@ All colors MUST be HSL.
     box-shadow: 0 0 30px hsl(var(--primary) / 0.6);
   }
 }
+
+@keyframes blink-border {
+  0%, 100% {
+    border-color: transparent;
+    box-shadow: none;
+  }
+  50% {
+    border-color: hsl(25 95% 53%);
+    box-shadow: 0 0 15px hsl(25 95% 53% / 0.5);
+  }
+}
+
+.animate-blink-border {
+  animation: blink-border 0.5s ease-in-out 5;
+}

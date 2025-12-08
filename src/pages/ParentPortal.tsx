@@ -51,6 +51,7 @@ export const ParentPortal = ({
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'creditNotes' | 'receipts'>('dashboard');
   const [selectedStudent, setSelectedStudent] = useState<string>(mockStudents[0]?.id.toString() || '1');
   const [isCreditNoteModalOpen, setIsCreditNoteModalOpen] = useState(false);
+  const [highlightedCreditNoteId, setHighlightedCreditNoteId] = useState<string | null>(null);
   
   const { t, language, formatCurrency } = useLanguage();
 
@@ -162,6 +163,13 @@ export const ParentPortal = ({
       title: t('payment.downloadReceipt'),
       description: t('payment.downloadStarted'),
     });
+  };
+
+  const handleCreditNoteClick = (creditNoteId: string) => {
+    setActiveTab('creditNotes');
+    setHighlightedCreditNoteId(creditNoteId);
+    // Clear highlight after animation completes (5 blinks × 0.5s = 2.5s)
+    setTimeout(() => setHighlightedCreditNoteId(null), 2500);
   };
 
   return (
@@ -319,6 +327,7 @@ export const ParentPortal = ({
             <CreditNoteHistory 
               creditNotes={allCreditNotes}
               students={mockStudents}
+              highlightedCreditNoteId={highlightedCreditNoteId}
             />
           </TabsContent>
 
@@ -327,6 +336,7 @@ export const ParentPortal = ({
             <ReceiptList 
               receipts={allReceipts}
               onDownload={handleDownloadReceipt}
+              onCreditNoteClick={handleCreditNoteClick}
             />
           </TabsContent>
         </Tabs>
