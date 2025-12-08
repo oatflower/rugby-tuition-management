@@ -46,7 +46,7 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStudent, setSelectedStudent] = useState<string>("all");
-  const [selectedPaymentChannel, setSelectedPaymentChannel] = useState<string>("all");
+  
 
   // Get unique academic years
   const academicYears = useMemo(() => {
@@ -58,16 +58,6 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
     return Array.from(years).sort().reverse();
   }, [creditNotes]);
 
-  // Get unique payment channels from used credit notes
-  const paymentChannels = useMemo(() => {
-    const channels = new Set<string>();
-    creditNotes.forEach(note => {
-      if (note.payment_channel) {
-        channels.add(note.payment_channel);
-      }
-    });
-    return Array.from(channels);
-  }, [creditNotes]);
 
   // Filter credit notes
   const filteredCreditNotes = useMemo(() => {
@@ -85,14 +75,10 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
       // Filter by student
       if (selectedStudent !== "all" && note.student_id.toString() !== selectedStudent) return false;
 
-      // Filter by payment channel (only for used notes)
-      if (selectedPaymentChannel !== "all") {
-        if (note.status !== "used" || note.payment_channel !== selectedPaymentChannel) return false;
-      }
 
       return true;
     });
-  }, [creditNotes, selectedYear, selectedType, selectedStudent, selectedPaymentChannel]);
+  }, [creditNotes, selectedYear, selectedType, selectedStudent]);
 
   // Calculate totals
   const totalIn = filteredCreditNotes
@@ -126,7 +112,7 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Academic Year Filter */}
             <div className="space-y-2">
               <label className={`text-sm font-medium ${fontClass}`}>
@@ -182,25 +168,6 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
               </Select>
             </div>
 
-            {/* Payment Channel Filter */}
-            <div className="space-y-2">
-              <label className={`text-sm font-medium ${fontClass}`}>
-                {language === 'th' ? 'ช่องทางชำระ' : language === 'zh' ? '支付渠道' : 'Payment Channel'}
-              </label>
-              <Select value={selectedPaymentChannel} onValueChange={setSelectedPaymentChannel}>
-                <SelectTrigger>
-                  <SelectValue placeholder={language === 'th' ? 'เลือกช่องทาง' : language === 'zh' ? '选择渠道' : 'Select Channel'} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{language === 'th' ? 'ทั้งหมด' : language === 'zh' ? '全部' : 'All Channels'}</SelectItem>
-                  {paymentChannels.map(channel => (
-                    <SelectItem key={channel} value={channel}>
-                      {getPaymentChannelLabel(channel)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </CardContent>
       </Card>
