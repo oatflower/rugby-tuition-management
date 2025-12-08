@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, Receipt, CreditCard, DollarSign, CalendarIcon, X, Smartphone, QrCode, ArrowDownCircle, Flame, Wallet } from "lucide-react";
+import { Download, Receipt, CreditCard, DollarSign, CalendarIcon, X, Smartphone, QrCode, ArrowDownCircle, Flame, Wallet, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { format } from "date-fns";
 import {
@@ -393,9 +393,10 @@ export const ReceiptList = ({ receipts, onDownload, onCreditNoteClick }: Receipt
                                       {event.credit_note_id && (
                                         <button
                                           onClick={() => onCreditNoteClick?.(event.credit_note_id!)}
-                                          className="ml-1 text-orange-600 hover:underline cursor-pointer font-medium"
+                                          className="ml-1 text-orange-600 hover:underline cursor-pointer font-medium inline-flex items-center gap-0.5 hover:text-orange-700 transition-colors"
                                         >
                                           ({event.credit_note_id})
+                                          <ExternalLink className="h-3 w-3" />
                                         </button>
                                       )}
                                     </p>
