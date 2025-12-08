@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Receipt, ArrowDownCircle, ArrowUpCircle, Calendar, User, Filter, CreditCard, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface CreditNote {
   id: string;
@@ -32,6 +33,7 @@ interface Student {
 interface CreditNoteHistoryProps {
   creditNotes: CreditNote[];
   students: Student[];
+  highlightedCreditNoteId?: string | null;
 }
 
 const paymentChannelLabels: Record<string, { en: string; th: string; zh: string }> = {
@@ -42,12 +44,28 @@ const paymentChannelLabels: Record<string, { en: string; th: string; zh: string 
   alipay: { en: 'Alipay', th: 'Alipay', zh: '支付宝' },
 };
 
-export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryProps) => {
+export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNoteId }: CreditNoteHistoryProps) => {
   const { t, language, formatCurrency } = useLanguage();
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStudent, setSelectedStudent] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const highlightedRef = useRef<HTMLDivElement>(null);
+
+  // Auto-search and scroll when highlightedCreditNoteId changes
+  useEffect(() => {
+    if (highlightedCreditNoteId) {
+      setSearchQuery(highlightedCreditNoteId);
+      setSelectedYear("all");
+      setSelectedType("all");
+      setSelectedStudent("all");
+      
+      // Scroll to highlighted element after a short delay
+      setTimeout(() => {
+        highlightedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  }, [highlightedCreditNoteId]);
 
   // Get unique academic years
   const academicYears = useMemo(() => {
@@ -263,8 +281,13 @@ export const CreditNoteHistory = ({ creditNotes, students }: CreditNoteHistoryPr
 
                   return (
                     <div 
-                      key={note.id} 
-                      className={`p-4 rounded-lg border ${isUsed ? 'bg-muted/30 border-muted' : 'bg-green-500/5 border-green-500/20'}`}
+                      key={note.id}
+                      ref={highlightedCreditNoteId === note.id ? highlightedRef : null}
+                      className={cn(
+                        "p-4 rounded-lg border-2 transition-all",
+                        isUsed ? 'bg-muted/30 border-muted' : 'bg-green-500/5 border-green-500/20',
+                        highlightedCreditNoteId === note.id && "animate-blink-border"
+                      )}
                     >
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div className="flex items-start gap-3">

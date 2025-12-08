@@ -55,9 +55,10 @@ interface Receipt {
 interface ReceiptListProps {
   receipts: Receipt[];
   onDownload?: (receiptId: string) => void;
+  onCreditNoteClick?: (creditNoteId: string) => void;
 }
 
-export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
+export const ReceiptList = ({ receipts, onDownload, onCreditNoteClick }: ReceiptListProps) => {
   const { language, formatCurrency, t } = useLanguage();
   const [selectedMonth, setSelectedMonth] = useState<Date | undefined>(undefined);
   const [selectedStudent, setSelectedStudent] = useState<string>("all");
@@ -389,7 +390,14 @@ export const ReceiptList = ({ receipts, onDownload }: ReceiptListProps) => {
                                     } ${fontClass}`}>
                                       {event.event === 'received' ? '+' : event.event === 'burned' ? '-' : ''}
                                       {formatCurrency(event.amount)}
-                                      {event.credit_note_id && ` (${event.credit_note_id})`}
+                                      {event.credit_note_id && (
+                                        <button
+                                          onClick={() => onCreditNoteClick?.(event.credit_note_id!)}
+                                          className="ml-1 text-orange-600 hover:underline cursor-pointer font-medium"
+                                        >
+                                          ({event.credit_note_id})
+                                        </button>
+                                      )}
                                     </p>
                                     <p className={`text-xs text-muted-foreground ${fontClass}`}>
                                       {event.details}
