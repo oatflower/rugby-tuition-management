@@ -45,38 +45,40 @@ export const SummaryBox = ({
     secondary: 'bg-secondary/20 text-secondary-foreground',
   };
 
+  const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
+
   return (
     <Card 
-      className={`relative overflow-hidden transition-all hover:shadow-md border-2 ${colorClasses[color]} ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative overflow-hidden transition-all hover:shadow-md border-2 ${colorClasses[color]} ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''}`}
       onClick={onClick}
     >
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <p className={`text-2xl font-bold mb-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <p className={`text-xs sm:text-sm font-medium text-muted-foreground mb-0.5 sm:mb-1 truncate ${fontClass}`}>
               {title}
             </p>
-            <div className="flex items-baseline gap-2">
-              <p className={`text-2xl font-bold ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+            <div className="flex items-baseline gap-1 sm:gap-2">
+              <p className={`text-base sm:text-xl font-bold truncate ${fontClass}`}>
                 {typeof value === 'number' ? value.toLocaleString() : value}
               </p>
               {trend && (
-                <span className={`text-xs font-medium ${
+                <span className={`text-[10px] sm:text-xs font-medium flex-shrink-0 ${
                   trend.isPositive ? 'text-finance-green' : 'text-destructive'
-                } ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                } ${fontClass}`}>
                   {trend.isPositive ? '+' : ''}{trend.value}%
                 </span>
               )}
             </div>
             {subtitle && (
-              <p className={`text-xs text-muted-foreground mt-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+              <p className={`text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate ${fontClass}`}>
                 {subtitle}
               </p>
             )}
           </div>
           
-          <div className={`w-12 h-12 rounded-lg ${iconBgClasses[color]} flex items-center justify-center`}>
-            <Icon className="h-6 w-6" />
+          <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg ${iconBgClasses[color]} flex items-center justify-center flex-shrink-0`}>
+            <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
           </div>
         </div>
       </CardContent>

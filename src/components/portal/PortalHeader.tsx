@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Menu, LogOut, Bell, DollarSign, Receipt, ShoppingCart } from "lucide-react";
+import { Bell } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import sisbLogo from "@/assets/rugby-logo.jpg";
 import { ParentAccountSelector } from "./ParentAccountSelector";
@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CountdownTimer } from "./CountdownTimer";
+
 interface PortalHeaderProps {
   onLogout?: () => void;
   activeTab?: string;
@@ -20,6 +20,7 @@ interface PortalHeaderProps {
   onCancelCountdown?: () => void;
   additionalCourses?: number;
 }
+
 export const PortalHeader = ({
   onLogout,
   activeTab = "dashboard",
@@ -31,12 +32,10 @@ export const PortalHeader = ({
   onCancelCountdown,
   additionalCourses = 0
 }: PortalHeaderProps) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const {
-    t,
-    language
-  } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
 
   // Mock notification data
   const notifications = {
@@ -51,6 +50,7 @@ export const PortalHeader = ({
     }]
   };
   const totalNotifications = notifications.tuitionPayment.length;
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const days = ['day.sunday', 'day.monday', 'day.tuesday', 'day.wednesday', 'day.thursday', 'day.friday', 'day.saturday'];
@@ -66,22 +66,27 @@ export const PortalHeader = ({
     }
     return dateString;
   };
+
   const today = new Date();
   const formattedToday = formatDate(today.toISOString().split('T')[0]);
-  return <>
+
+  return (
+    <>
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo & Title */}
-            <div className="flex items-center gap-3">
-              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-10 w-auto" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-8 sm:h-10 w-auto" />
               <div>
-                <h1 className={`text-lg font-bold text-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>Payment Portal</h1>
+                <h1 className={`text-sm sm:text-lg font-bold text-foreground ${fontClass}`}>
+                  Payment Portal
+                </h1>
               </div>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-4">
               <ParentAccountSelector onLogout={onLogout} />
               <LanguageSelector />
               
@@ -90,96 +95,99 @@ export const PortalHeader = ({
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="sm" className="relative">
                     <Bell className="h-4 w-4" />
-                    {totalNotifications > 0 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                    {totalNotifications > 0 && (
+                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
                         {totalNotifications}
-                      </Badge>}
+                      </Badge>
+                    )}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>{t('portal.notifications')}</DialogTitle>
+                    <DialogTitle className={fontClass}>{t('portal.notifications')}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-2 mt-4">
-                    <h3 className={`font-semibold mb-3 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                    <h3 className={`font-semibold mb-3 ${fontClass}`}>
                       {t('portal.tuitionPayment')}
                     </h3>
-                    {notifications.tuitionPayment.map(notification => <div key={notification.id} className="p-3 bg-muted rounded-lg">
-                        <p className={`text-sm ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{notification.message}</p>
-                        <p className={`text-xs text-muted-foreground mt-1 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{formatDate(notification.date)}</p>
-                      </div>)}
+                    {notifications.tuitionPayment.map(notification => (
+                      <div key={notification.id} className="p-3 bg-muted rounded-lg">
+                        <p className={`text-sm ${fontClass}`}>{notification.message}</p>
+                        <p className={`text-xs text-muted-foreground mt-1 ${fontClass}`}>{formatDate(notification.date)}</p>
+                      </div>
+                    ))}
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
 
-            {/* Mobile Menu Button */}
-            <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              <Menu className="h-5 w-5" />
-            </Button>
+            {/* Mobile: Language + Notification only */}
+            <div className="flex md:hidden items-center gap-1">
+              <LanguageSelector />
+              <Dialog open={notificationOpen} onOpenChange={setNotificationOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative h-9 w-9 p-0">
+                    <Bell className="h-4 w-4" />
+                    {totalNotifications > 0 && (
+                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
+                        {totalNotifications}
+                      </Badge>
+                    )}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[calc(100vw-2rem)] mx-4 rounded-lg">
+                  <DialogHeader>
+                    <DialogTitle className={fontClass}>{t('portal.notifications')}</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2 mt-4">
+                    <h3 className={`font-semibold mb-3 ${fontClass}`}>
+                      {t('portal.tuitionPayment')}
+                    </h3>
+                    {notifications.tuitionPayment.map(notification => (
+                      <div key={notification.id} className="p-3 bg-muted rounded-lg">
+                        <p className={`text-sm ${fontClass}`}>{notification.message}</p>
+                        <p className={`text-xs text-muted-foreground mt-1 ${fontClass}`}>{formatDate(notification.date)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-sm">
-              <div className="px-2 py-4 space-y-4">
-                
-                {/* Navigation Menu */}
-                <div className="px-2">
-                  <h4 className={`font-medium mb-3 text-sm text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>{t('nav.home')}</h4>
-                  <div className="space-y-1">
-                    <button onClick={() => onTabChange?.("dashboard")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "dashboard" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      <GraduationCap className="h-4 w-4" />
-                      Dashboard
-                    </button>
-                    <button onClick={() => onTabChange?.("tuition")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "tuition" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      <DollarSign className="h-4 w-4" />
-                      Tuition
-                    </button>
-                    <button onClick={() => onTabChange?.("receipts")} className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === "receipts" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground"} ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      <Receipt className="h-4 w-4" />
-                      Receipts
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between px-2 pt-3 border-t border-border">
-                  <LanguageSelector />
-                <div className="flex items-center gap-2">
-                    <Dialog open={notificationOpen} onOpenChange={setNotificationOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="relative">
-                          <Bell className="h-4 w-4" />
-                          {totalNotifications > 0 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                              {totalNotifications}
-                            </Badge>}
-                        </Button>
-                      </DialogTrigger>
-                    </Dialog>
-                  </div>
-                </div>
-              </div>
-            </div>}
         </div>
       </header>
       
-      {/* Welcome Section */}
+      {/* Welcome Section - Compact on mobile */}
       <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div>
-                <h2 className={`text-xl font-semibold text-primary ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                  {t('portal.welcome')}, John Smith
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <div className="min-w-0">
+                <h2 className={`text-base sm:text-xl font-semibold text-primary truncate ${fontClass}`}>
+                  {t('portal.welcome')}, John
                 </h2>
-                <p className={`text-sm text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                  {t('portal.today')}: {formattedToday}
+                <p className={`text-xs sm:text-sm text-muted-foreground truncate ${fontClass}`}>
+                  {formattedToday}
                 </p>
               </div>
               
               {/* Countdown Timer */}
-              {showCountdown && onCountdownExpired && onCancelCountdown && <CountdownTimer onTimeExpired={onCountdownExpired} onCancel={onCancelCountdown} additionalCourses={additionalCourses} />}
+              {showCountdown && onCountdownExpired && onCancelCountdown && (
+                <CountdownTimer 
+                  onTimeExpired={onCountdownExpired} 
+                  onCancel={onCancelCountdown} 
+                  additionalCourses={additionalCourses} 
+                />
+              )}
+            </div>
+            
+            {/* Desktop: Account Selector */}
+            <div className="hidden md:block">
+              <ParentAccountSelector onLogout={onLogout} />
             </div>
           </div>
         </div>
       </div>
-    </>;
+    </>
+  );
 };

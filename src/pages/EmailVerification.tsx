@@ -75,22 +75,22 @@ export const EmailVerification = ({ onEmailVerified }: EmailVerificationProps) =
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 safe-area-top safe-area-bottom">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8">
         {/* Logo */}
         <div className="flex justify-center">
           <img 
             src="/src/assets/rugby-logo-full.jpg" 
             alt="Rugby School Thailand" 
-            className="h-20 w-auto"
+            className="h-16 sm:h-20 w-auto"
           />
         </div>
 
         {/* Card */}
-        <div className="bg-card border border-border rounded-lg shadow-lg p-8 space-y-6">
-          <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-bold text-foreground">{t.title}</h1>
-            <p className="text-sm text-muted-foreground">{t.subtitle}</p>
+        <div className="bg-card border border-border rounded-lg shadow-lg p-5 sm:p-8 space-y-5 sm:space-y-6">
+          <div className="space-y-1.5 sm:space-y-2 text-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t.title}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">{t.subtitle}</p>
           </div>
 
           <div className="space-y-4">
@@ -106,14 +106,14 @@ export const EmailVerification = ({ onEmailVerified }: EmailVerificationProps) =
                   }
                 }}
                 disabled={isChecking}
-                className="w-full"
+                className="w-full h-11 sm:h-10 text-base sm:text-sm touch-manipulation"
               />
             </div>
 
             <Button
               onClick={handleVerifyEmail}
               disabled={isChecking || !email}
-              className="w-full"
+              className="w-full h-11 sm:h-10 text-base sm:text-sm touch-manipulation"
             >
               {isChecking ? "Checking..." : t.verifyButton}
             </Button>
@@ -121,7 +121,7 @@ export const EmailVerification = ({ onEmailVerified }: EmailVerificationProps) =
         </div>
 
         {/* Footer */}
-        <div className="text-center text-gray-400 text-xs">
+        <div className="text-center text-gray-400 text-[10px] sm:text-xs">
           <p>© 2024 Rugby School Thailand</p>
         </div>
       </div>

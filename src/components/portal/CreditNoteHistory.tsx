@@ -129,40 +129,40 @@ export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNote
   const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Filters */}
       <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className={`flex items-center gap-2 ${fontClass}`}>
-            <Filter className="h-5 w-5" />
+        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+          <CardTitle className={`flex items-center gap-2 text-base sm:text-lg ${fontClass}`}>
+            <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
             {language === 'th' ? 'ตัวกรอง' : language === 'zh' ? '筛选' : 'Filters'}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
           {/* Search Input */}
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder={language === 'th' ? 'ค้นหา Credit Note (ID, รายละเอียด)...' : language === 'zh' ? '搜索信用票据 (ID, 详情)...' : 'Search Credit Note (ID, details)...'}
+                placeholder={language === 'th' ? 'ค้นหา Credit Note...' : language === 'zh' ? '搜索信用票据...' : 'Search Credit Note...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-10 ${fontClass}`}
+                className={`pl-10 h-10 sm:h-9 text-sm ${fontClass}`}
               />
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {/* Academic Year Filter */}
-            <div className="space-y-2">
-              <label className={`text-sm font-medium ${fontClass}`}>
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className={`text-xs sm:text-sm font-medium ${fontClass}`}>
                 {language === 'th' ? 'ปีการศึกษา' : language === 'zh' ? '学年' : 'Academic Year'}
               </label>
               <Select value={selectedYear} onValueChange={setSelectedYear}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 sm:h-9 text-sm">
                   <SelectValue placeholder={language === 'th' ? 'เลือกปี' : language === 'zh' ? '选择年份' : 'Select Year'} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="all">{language === 'th' ? 'ทั้งหมด' : language === 'zh' ? '全部' : 'All Years'}</SelectItem>
                   {academicYears.map(year => (
                     <SelectItem key={year} value={year}>{year}</SelectItem>
@@ -172,32 +172,32 @@ export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNote
             </div>
 
             {/* Type Filter (In/Out) */}
-            <div className="space-y-2">
-              <label className={`text-sm font-medium ${fontClass}`}>
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className={`text-xs sm:text-sm font-medium ${fontClass}`}>
                 {language === 'th' ? 'ประเภท' : language === 'zh' ? '类型' : 'Type'}
               </label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 sm:h-9 text-sm">
                   <SelectValue placeholder={language === 'th' ? 'เลือกประเภท' : language === 'zh' ? '选择类型' : 'Select Type'} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="all">{language === 'th' ? 'ทั้งหมด' : language === 'zh' ? '全部' : 'All'}</SelectItem>
-                  <SelectItem value="in">{language === 'th' ? 'รับเข้า (Active)' : language === 'zh' ? '收入 (Active)' : 'Received (Active)'}</SelectItem>
-                  <SelectItem value="out">{language === 'th' ? 'ใช้ออก (Used)' : language === 'zh' ? '支出 (Used)' : 'Used (Out)'}</SelectItem>
+                  <SelectItem value="in">{language === 'th' ? 'คงเหลือ' : language === 'zh' ? '可用' : 'Active'}</SelectItem>
+                  <SelectItem value="out">{language === 'th' ? 'ใช้แล้ว' : language === 'zh' ? '已使用' : 'Used'}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Student Filter */}
-            <div className="space-y-2">
-              <label className={`text-sm font-medium ${fontClass}`}>
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className={`text-xs sm:text-sm font-medium ${fontClass}`}>
                 {language === 'th' ? 'นักเรียน' : language === 'zh' ? '学生' : 'Student'}
               </label>
               <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 sm:h-9 text-sm">
                   <SelectValue placeholder={language === 'th' ? 'เลือกนักเรียน' : language === 'zh' ? '选择学生' : 'Select Student'} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="all">{language === 'th' ? 'ทุกคน' : language === 'zh' ? '全部' : 'All Students'}</SelectItem>
                   {students.map(student => (
                     <SelectItem key={student.id} value={student.id.toString()}>
@@ -207,24 +207,23 @@ export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNote
                 </SelectContent>
               </Select>
             </div>
-
           </div>
         </CardContent>
       </Card>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Summary Cards - 2 columns on mobile */}
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
         <Card className="bg-green-500/10 border-green-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-500/20 rounded-lg">
-                <ArrowDownCircle className="h-5 w-5 text-green-600" />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-green-500/20 rounded-lg flex-shrink-0">
+                <ArrowDownCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
               </div>
-              <div>
-                <p className={`text-sm text-muted-foreground ${fontClass}`}>
-                  {language === 'th' ? 'Credit Note คงเหลือ' : language === 'zh' ? '可用信用票据' : 'Available Credit'}
+              <div className="min-w-0">
+                <p className={`text-[10px] sm:text-sm text-muted-foreground truncate ${fontClass}`}>
+                  {language === 'th' ? 'คงเหลือ' : language === 'zh' ? '可用' : 'Available'}
                 </p>
-                <p className={`text-2xl font-bold text-green-600 ${fontClass}`}>
+                <p className={`text-base sm:text-2xl font-bold text-green-600 truncate ${fontClass}`}>
                   {formatCurrency(totalIn)}
                 </p>
               </div>
@@ -233,16 +232,16 @@ export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNote
         </Card>
 
         <Card className="bg-orange-500/10 border-orange-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-500/20 rounded-lg">
-                <ArrowUpCircle className="h-5 w-5 text-orange-600" />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-orange-500/20 rounded-lg flex-shrink-0">
+                <ArrowUpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
               </div>
-              <div>
-                <p className={`text-sm text-muted-foreground ${fontClass}`}>
-                  {language === 'th' ? 'Credit Note ที่ใช้ไปแล้ว' : language === 'zh' ? '已使用信用票据' : 'Used Credit'}
+              <div className="min-w-0">
+                <p className={`text-[10px] sm:text-sm text-muted-foreground truncate ${fontClass}`}>
+                  {language === 'th' ? 'ใช้แล้ว' : language === 'zh' ? '已使用' : 'Used'}
                 </p>
-                <p className={`text-2xl font-bold text-orange-600 ${fontClass}`}>
+                <p className={`text-base sm:text-2xl font-bold text-orange-600 truncate ${fontClass}`}>
                   {formatCurrency(totalOut)}
                 </p>
               </div>
@@ -253,26 +252,26 @@ export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNote
 
       {/* Credit Note List */}
       <Card>
-        <CardHeader>
-          <CardTitle className={`flex items-center gap-2 ${fontClass}`}>
-            <Receipt className="h-5 w-5" />
+        <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-2 sm:pb-4">
+          <CardTitle className={`flex items-center gap-2 text-base sm:text-lg ${fontClass}`}>
+            <Receipt className="h-4 w-4 sm:h-5 sm:w-5" />
             {language === 'th' ? 'รายการ Credit Note' : language === 'zh' ? '信用票据列表' : 'Credit Note History'}
           </CardTitle>
-          <CardDescription className={fontClass}>
+          <CardDescription className={`text-xs sm:text-sm ${fontClass}`}>
             {language === 'th' 
-              ? '* Credit Note สามารถใช้ได้เฉพาะนักเรียนที่ได้รับเท่านั้น ไม่สามารถใช้ข้ามนักเรียนได้' 
+              ? '* Credit Note ใช้ได้เฉพาะนักเรียนที่ได้รับเท่านั้น' 
               : language === 'zh' 
-              ? '* 信用票据只能用于分配给的学生，不能跨学生使用'
-              : '* Credit notes are per student and cannot be used across different students'}
+              ? '* 信用票据只能用于分配给的学生'
+              : '* Credit notes are per student only'}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
           {filteredCreditNotes.length === 0 ? (
-            <div className={`text-center py-8 text-muted-foreground ${fontClass}`}>
+            <div className={`text-center py-6 sm:py-8 text-muted-foreground text-sm ${fontClass}`}>
               {language === 'th' ? 'ไม่พบรายการ Credit Note' : language === 'zh' ? '未找到信用票据' : 'No credit notes found'}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2 sm:space-y-4">
               {filteredCreditNotes
                 .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
                 .map(note => {
@@ -284,68 +283,73 @@ export const CreditNoteHistory = ({ creditNotes, students, highlightedCreditNote
                       key={note.id}
                       ref={highlightedCreditNoteId === note.id ? highlightedRef : null}
                       className={cn(
-                        "p-4 rounded-lg border-2 transition-all",
+                        "p-3 sm:p-4 rounded-lg border-2 transition-all",
                         isUsed ? 'bg-muted/30 border-muted' : 'bg-green-500/5 border-green-500/20',
                         highlightedCreditNoteId === note.id && "animate-blink-border"
                       )}
                     >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2 rounded-lg ${isUsed ? 'bg-orange-500/20' : 'bg-green-500/20'}`}>
-                            {isUsed ? (
-                              <ArrowUpCircle className="h-5 w-5 text-orange-600" />
-                            ) : (
-                              <ArrowDownCircle className="h-5 w-5 text-green-600" />
-                            )}
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`font-semibold ${fontClass}`}>{note.id}</span>
-                              <Badge 
-                                variant={isUsed ? "secondary" : "default"}
-                                className={isUsed ? "" : "bg-green-500"}
-                              >
-                                {isUsed 
-                                  ? (language === 'th' ? 'ใช้แล้ว' : language === 'zh' ? '已使用' : 'Used')
-                                  : (language === 'th' ? 'คงเหลือ' : language === 'zh' ? '可用' : 'Active')
-                                }
-                              </Badge>
+                      <div className="flex flex-col gap-2 sm:gap-3">
+                        {/* Header row with icon, ID, badge, and amount */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
+                            <div className={`p-1.5 sm:p-2 rounded-lg flex-shrink-0 ${isUsed ? 'bg-orange-500/20' : 'bg-green-500/20'}`}>
+                              {isUsed ? (
+                                <ArrowUpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+                              ) : (
+                                <ArrowDownCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                              )}
                             </div>
-                            <p className={`text-sm text-muted-foreground ${fontClass}`}>
-                              {note.details}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className={`font-semibold text-sm sm:text-base truncate ${fontClass}`}>{note.id}</span>
+                                <Badge 
+                                  variant={isUsed ? "secondary" : "default"}
+                                  className={`text-[10px] sm:text-xs ${isUsed ? "" : "bg-green-500"}`}
+                                >
+                                  {isUsed 
+                                    ? (language === 'th' ? 'ใช้แล้ว' : language === 'zh' ? '已使用' : 'Used')
+                                    : (language === 'th' ? 'คงเหลือ' : language === 'zh' ? '可用' : 'Active')
+                                  }
+                                </Badge>
+                              </div>
+                              <p className={`text-xs sm:text-sm text-muted-foreground mt-0.5 line-clamp-2 ${fontClass}`}>
+                                {note.details}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <p className={`text-base sm:text-xl font-bold ${isUsed ? 'text-orange-600' : 'text-green-600'} ${fontClass}`}>
+                              {isUsed ? '-' : '+'}{formatCurrency(note.amount)}
                             </p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {language === 'th' ? 'วันที่ออก: ' : language === 'zh' ? '发行日期: ' : 'Issued: '}
-                                {new Date(note.timestamp).toLocaleDateString()}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                {student?.avatar} {student?.name}
-                              </span>
-                            </div>
-                            {isUsed && note.used_at && (
-                              <div className={`text-xs text-orange-600 mt-1 ${fontClass}`}>
-                                {language === 'th' ? '✓ ใช้เมื่อ: ' : language === 'zh' ? '✓ 使用于: ' : '✓ Used on: '}
-                                {new Date(note.used_at).toLocaleDateString()}
-                                {note.used_for && ` - ${note.used_for}`}
-                              </div>
-                            )}
-                            {isUsed && note.payment_channel && (
-                              <div className={`text-xs text-muted-foreground mt-1 flex items-center gap-1 ${fontClass}`}>
-                                <CreditCard className="h-3 w-3" />
-                                {language === 'th' ? 'ช่องทาง: ' : language === 'zh' ? '支付渠道: ' : 'Channel: '}
-                                {getPaymentChannelLabel(note.payment_channel)}
-                              </div>
-                            )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`text-xl font-bold ${isUsed ? 'text-orange-600' : 'text-green-600'} ${fontClass}`}>
-                            {isUsed ? '-' : '+'}{formatCurrency(note.amount)}
-                          </p>
+                        
+                        {/* Meta info row */}
+                        <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-muted-foreground flex-wrap pl-8 sm:pl-11">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(note.timestamp).toLocaleDateString()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {student?.avatar} {student?.name}
+                          </span>
                         </div>
+                        
+                        {/* Used info */}
+                        {isUsed && note.used_at && (
+                          <div className={`text-[10px] sm:text-xs text-orange-600 pl-8 sm:pl-11 ${fontClass}`}>
+                            ✓ {language === 'th' ? 'ใช้เมื่อ: ' : language === 'zh' ? '使用于: ' : 'Used: '}
+                            {new Date(note.used_at).toLocaleDateString()}
+                            {note.used_for && ` - ${note.used_for}`}
+                          </div>
+                        )}
+                        {isUsed && note.payment_channel && (
+                          <div className={`text-[10px] sm:text-xs text-muted-foreground pl-8 sm:pl-11 flex items-center gap-1 ${fontClass}`}>
+                            <CreditCard className="h-3 w-3" />
+                            {getPaymentChannelLabel(note.payment_channel)}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
