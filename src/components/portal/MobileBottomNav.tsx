@@ -1,4 +1,4 @@
-import { GraduationCap, DollarSign, Receipt, FileText } from "lucide-react";
+import { Home, DollarSign, Receipt, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -15,13 +15,13 @@ export const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps
   const navItems = [
     {
       id: 'dashboard',
-      icon: GraduationCap,
-      label: language === 'th' ? 'หน้าหลัก' : language === 'zh' ? '首页' : 'Home',
+      icon: Home,
+      label: language === 'th' ? 'หน้าหลัก' : language === 'zh' ? '首页' : 'Dashboard',
     },
     {
       id: 'tuition',
       icon: DollarSign,
-      label: language === 'th' ? 'ใบแจ้งหนี้' : language === 'zh' ? '发票' : 'Invoice',
+      label: language === 'th' ? 'ใบแจ้งหนี้' : language === 'zh' ? '学费' : 'Tuition',
     },
     {
       id: 'creditNotes',
@@ -31,13 +31,13 @@ export const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps
     {
       id: 'receipts',
       icon: Receipt,
-      label: language === 'th' ? 'ใบเสร็จ' : language === 'zh' ? '收据' : 'Receipt',
+      label: language === 'th' ? 'ใบเสร็จ' : language === 'zh' ? '历史' : 'History',
     },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border md:hidden safe-area-bottom shadow-lg">
-      <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
+      <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -47,13 +47,13 @@ export const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps
               key={item.id}
               onClick={() => onTabChange(item.id)}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full py-1.5 transition-all",
+                "flex flex-col items-center justify-center flex-1 h-full py-2 transition-all",
                 "active:scale-95 touch-manipulation",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
               <div className={cn(
-                "flex items-center justify-center w-10 h-7 rounded-full transition-colors mb-0.5",
+                "flex items-center justify-center w-12 h-8 rounded-full transition-colors mb-1",
                 isActive && "bg-primary/10"
               )}>
                 <Icon className={cn(
@@ -62,7 +62,7 @@ export const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps
                 )} />
               </div>
               <span className={cn(
-                "text-[10px] leading-none",
+                "text-[10px] leading-tight",
                 fontClass,
                 isActive ? "font-semibold text-primary" : "font-medium"
               )}>

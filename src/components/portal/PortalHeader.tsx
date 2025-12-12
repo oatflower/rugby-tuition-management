@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import sisbLogo from "@/assets/rugby-logo.jpg";
 import { ParentAccountSelector } from "./ParentAccountSelector";
@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { CountdownTimer } from "./CountdownTimer";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 interface PortalHeaderProps {
   onLogout?: () => void;
@@ -33,6 +34,7 @@ export const PortalHeader = ({
   additionalCourses = 0
 }: PortalHeaderProps) => {
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { t, language } = useLanguage();
 
   const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
@@ -72,21 +74,22 @@ export const PortalHeader = ({
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background border-b border-border">
+      {/* Desktop Header */}
+      <header className="sticky top-0 z-50 bg-background border-b border-border hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex justify-between items-center h-14 sm:h-16">
+          <div className="flex justify-between items-center h-16">
             {/* Logo & Title */}
             <div className="flex items-center gap-3">
-              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-9 sm:h-10 w-auto rounded-full" />
+              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-10 w-auto rounded-full" />
               <div>
-                <h1 className={`text-base sm:text-lg font-semibold text-foreground ${fontClass}`}>
+                <h1 className={`text-lg font-semibold text-foreground ${fontClass}`}>
                   {language === 'th' ? 'ระบบชำระเงิน' : language === 'zh' ? '付款门户' : 'Payment Portal'}
                 </h1>
               </div>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-4">
               <ParentAccountSelector onLogout={onLogout} />
               <LanguageSelector />
               
@@ -120,52 +123,19 @@ export const PortalHeader = ({
                 </DialogContent>
               </Dialog>
             </div>
-
-            {/* Mobile: Language + Notification */}
-            <div className="flex md:hidden items-center gap-2">
-              <LanguageSelector />
-              <Dialog open={notificationOpen} onOpenChange={setNotificationOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative h-9 w-9">
-                    <Bell className="h-5 w-5" />
-                    {totalNotifications > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive text-destructive-foreground rounded-full text-[10px] flex items-center justify-center font-medium">
-                        {totalNotifications}
-                      </span>
-                    )}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[calc(100vw-2rem)] mx-4 rounded-xl">
-                  <DialogHeader>
-                    <DialogTitle className={fontClass}>{t('portal.notifications')}</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-2 mt-4">
-                    <h3 className={`font-semibold mb-3 ${fontClass}`}>
-                      {t('portal.tuitionPayment')}
-                    </h3>
-                    {notifications.tuitionPayment.map(notification => (
-                      <div key={notification.id} className="p-3 bg-muted rounded-lg">
-                        <p className={`text-sm ${fontClass}`}>{notification.message}</p>
-                        <p className={`text-xs text-muted-foreground mt-1 ${fontClass}`}>{formatDate(notification.date)}</p>
-                      </div>
-                    ))}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
           </div>
         </div>
       </header>
-      
-      {/* Welcome Section - Clean & Minimal */}
-      <div className="bg-muted/30 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+
+      {/* Desktop Welcome Section */}
+      <div className="bg-muted/30 border-b border-border hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className={`text-lg sm:text-xl font-semibold text-foreground ${fontClass}`}>
+              <h2 className={`text-xl font-semibold text-foreground ${fontClass}`}>
                 {t('portal.welcome')}, John
               </h2>
-              <p className={`text-xs sm:text-sm text-muted-foreground ${fontClass}`}>
+              <p className={`text-sm text-muted-foreground ${fontClass}`}>
                 {formattedToday}
               </p>
             </div>
@@ -186,6 +156,90 @@ export const PortalHeader = ({
           </div>
         </div>
       </div>
+
+      {/* Mobile Header with Blue Gradient Welcome */}
+      <header className="sticky top-0 z-50 md:hidden">
+        {/* Top bar with logo and menu */}
+        <div className="bg-background border-b border-border">
+          <div className="flex justify-between items-center h-14 px-4">
+            <div className="flex items-center gap-2">
+              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-8 w-auto rounded-full" />
+              <span className={`font-semibold text-foreground ${fontClass}`}>
+                {language === 'th' ? 'ระบบชำระเงิน' : language === 'zh' ? '付款门户' : 'Payment Portal'}
+              </span>
+            </div>
+            
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px]">
+                <SheetHeader>
+                  <SheetTitle className={fontClass}>
+                    {language === 'th' ? 'เมนู' : language === 'zh' ? '菜单' : 'Menu'}
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="mt-6 space-y-4">
+                  <LanguageSelector />
+                  <Dialog open={notificationOpen} onOpenChange={setNotificationOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start gap-2">
+                        <Bell className="h-4 w-4" />
+                        <span className={fontClass}>{t('portal.notifications')}</span>
+                        {totalNotifications > 0 && (
+                          <Badge variant="destructive" className="ml-auto">
+                            {totalNotifications}
+                          </Badge>
+                        )}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[calc(100vw-2rem)] mx-4 rounded-xl">
+                      <DialogHeader>
+                        <DialogTitle className={fontClass}>{t('portal.notifications')}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-2 mt-4">
+                        <h3 className={`font-semibold mb-3 ${fontClass}`}>
+                          {t('portal.tuitionPayment')}
+                        </h3>
+                        {notifications.tuitionPayment.map(notification => (
+                          <div key={notification.id} className="p-3 bg-muted rounded-lg">
+                            <p className={`text-sm ${fontClass}`}>{notification.message}</p>
+                            <p className={`text-xs text-muted-foreground mt-1 ${fontClass}`}>{formatDate(notification.date)}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <ParentAccountSelector onLogout={onLogout} />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+
+        {/* Blue Gradient Welcome Section */}
+        <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-4 py-3">
+          <h2 className={`text-lg font-semibold ${fontClass}`}>
+            {t('portal.welcome')}, John Smith
+          </h2>
+          <p className={`text-sm opacity-90 ${fontClass}`}>
+            {language === 'th' ? 'วันนี้' : language === 'zh' ? '今天' : 'Today'}: {formattedToday}
+          </p>
+          
+          {/* Countdown Timer for mobile */}
+          {showCountdown && onCountdownExpired && onCancelCountdown && (
+            <div className="mt-2">
+              <CountdownTimer 
+                onTimeExpired={onCountdownExpired} 
+                onCancel={onCancelCountdown} 
+                additionalCourses={additionalCourses} 
+              />
+            </div>
+          )}
+        </div>
+      </header>
     </>
   );
 };

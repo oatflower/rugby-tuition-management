@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PortalHeader } from "@/components/portal/PortalHeader";
 import { MobileBottomNav } from "@/components/portal/MobileBottomNav";
+import { MobileDashboard } from "@/components/portal/MobileDashboard";
 import { SummaryBox } from "@/components/portal/SummaryBox";
 import { InvoiceCard } from "@/components/portal/InvoiceCard";
 import { TuitionCartSidebar } from "@/components/portal/TuitionCartSidebar";
@@ -15,12 +16,15 @@ import {
   CreditCard,
   GraduationCap,
   Receipt,
-  AlertCircle
+  AlertCircle,
+  Home,
+  FileText
 } from "lucide-react";
 import { mockStudents, getMockDataForStudent, mockInvoices, mockReceipts, mandatoryCourses, mockCreditNotes } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CreditNoteModal } from "@/components/portal/CreditNoteModal";
+import { cn } from "@/lib/utils";
 
 interface ParentPortalProps {
   onLogout: () => void;
@@ -80,8 +84,21 @@ export const ParentPortal = ({
   const totalCreditNotes = allCreditNotes
     .filter(note => note.status === 'active')
     .reduce((sum, note) => sum + note.amount, 0);
+
+  const pendingCount = allInvoices.filter(i => i.status === 'pending').length;
+  const activeCreditCount = allCreditNotes.filter(n => n.status === 'active').length;
     
   const overdueCount = 0;
+
+  const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
+
+  // Mobile tab items for horizontal scroll
+  const mobileTabItems = [
+    { id: 'dashboard', icon: Home, label: language === 'th' ? 'หน้าหลัก' : language === 'zh' ? '首页' : 'Dashboard' },
+    { id: 'tuition', icon: DollarSign, label: language === 'th' ? 'ใบแจ้งหนี้' : language === 'zh' ? '学费' : 'Tuition' },
+    { id: 'creditNotes', icon: FileText, label: language === 'th' ? 'Credit' : language === 'zh' ? '信用' : 'Credit Note' },
+    { id: 'receipts', icon: Receipt, label: language === 'th' ? 'ใบเสร็จ' : language === 'zh' ? '收据' : 'Receipt' },
+  ];
 
   const handleAddToCart = (itemId: string, type: 'course' | 'activity' | 'tuition', studentId?: string) => {
     let item: any;
@@ -171,7 +188,6 @@ export const ParentPortal = ({
     setTimeout(() => setHighlightedCreditNoteId(null), 2500);
   };
 
-  const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
 
   return (
     <div className="min-h-screen bg-muted/20 pb-20 md:pb-6">
@@ -192,9 +208,35 @@ export const ParentPortal = ({
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')}
       />
+
+      {/* Mobile Horizontal Tab Pills */}
+      <div className="md:hidden overflow-x-auto scrollbar-hide border-b border-border bg-background sticky top-[104px] z-40" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex gap-2 px-4 py-3">
+          {mobileTabItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
+                  fontClass,
+                  isActive 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')} className="space-y-4 sm:space-y-6">
+      <main className="max-w-7xl mx-auto px-0 md:px-6 py-0 md:py-6">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')} className="space-y-0 md:space-y-6">
           {/* Desktop Navigation - Tabs */}
           <TabsList className="hidden md:grid w-full grid-cols-4 gap-1">
             <TabsTrigger value="dashboard" className={fontClass}>
@@ -216,13 +258,24 @@ export const ParentPortal = ({
           </TabsList>
 
           {/* Dashboard Tab - Combined data for all students with student tags */}
-          <TabsContent value="dashboard" className="space-y-4 sm:space-y-6">
-            {/* Summary Stats - 2 columns on mobile, 3 on desktop */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+          <TabsContent value="dashboard" className="space-y-0 md:space-y-6 mt-0">
+            {/* Mobile Dashboard */}
+            <MobileDashboard
+              outstandingAmount={outstandingAmount}
+              pendingCount={pendingCount}
+              totalCreditNotes={totalCreditNotes}
+              activeCreditCount={activeCreditCount}
+              onViewInvoices={() => setActiveTab('tuition')}
+              onViewCreditNotes={() => setIsCreditNoteModalOpen(true)}
+              upcomingInvoices={allInvoices.filter(inv => inv.status === 'pending').sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())}
+            />
+
+            {/* Desktop Dashboard */}
+            <div className="hidden md:grid grid-cols-3 gap-4">
               <SummaryBox
                 title={t('portal.outstandingInvoices')}
                 value={formatCurrency(outstandingAmount)}
-                subtitle={`${allInvoices.filter(i => i.status === 'pending').length} ${t('portal.pending')}`}
+                subtitle={`${pendingCount} ${t('portal.pending')}`}
                 icon={DollarSign}
                 color={overdueCount > 0 ? 'destructive' : 'warning'}
                 onClick={() => setActiveTab('tuition')}
@@ -239,26 +292,26 @@ export const ParentPortal = ({
               <SummaryBox
                 title={t('portal.creditNotes')}
                 value={formatCurrency(totalCreditNotes)}
-                subtitle={`${allCreditNotes.filter(n => n.status === 'active').length} ${t('portal.available')}`}
+                subtitle={`${activeCreditCount} ${t('portal.available')}`}
                 icon={Receipt}
                 color="info"
                 onClick={() => setIsCreditNoteModalOpen(true)}
               />
             </div>
 
-            {/* Upcoming Deadlines - Combined with student identification */}
-            <Card>
-              <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-                <CardTitle className={`flex items-center gap-2 text-base sm:text-lg ${fontClass}`}>
-                  <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+            {/* Upcoming Deadlines - Desktop only */}
+            <Card className="hidden md:block">
+              <CardHeader className="px-6 py-6">
+                <CardTitle className={`flex items-center gap-2 text-lg ${fontClass}`}>
+                  <AlertCircle className="h-5 w-5" />
                   {t('portal.upcomingDeadlines')}
                 </CardTitle>
-                <CardDescription className={`text-xs sm:text-sm ${fontClass}`}>
+                <CardDescription className={`text-sm ${fontClass}`}>
                   {t('portal.importantDates')} {t('portal.allStudents')}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                <div className="space-y-2 sm:space-y-3">
+              <CardContent className="px-6 pb-6">
+                <div className="space-y-3">
                   {allInvoices
                     .filter(inv => inv.status === 'pending')
                     .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
@@ -266,19 +319,19 @@ export const ParentPortal = ({
                     .map(invoice => {
                       const student = mockStudents.find(s => s.id === invoice.student_id);
                       return (
-                        <div key={invoice.id} className="flex items-start sm:items-center justify-between p-2 sm:p-3 bg-muted/50 rounded-lg gap-2">
-                          <div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5 sm:mt-0" />
+                        <div key={invoice.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg gap-2">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                             <div className="min-w-0 flex-1">
-                              <p className={`font-medium text-xs sm:text-base truncate ${fontClass}`}>
+                              <p className={`font-medium text-base truncate ${fontClass}`}>
                                 {invoice.description}
                               </p>
-                              <p className={`text-[10px] sm:text-sm text-muted-foreground ${fontClass}`}>
+                              <p className={`text-sm text-muted-foreground ${fontClass}`}>
                                 {student?.name} • {t('portal.due')}: {new Date(invoice.due_date).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
-                          <Badge variant="default" className="text-[10px] sm:text-xs flex-shrink-0">
+                          <Badge variant="default" className="text-xs flex-shrink-0">
                             {formatCurrency(invoice.amount_due)}
                           </Badge>
                         </div>
@@ -290,12 +343,12 @@ export const ParentPortal = ({
           </TabsContent>
 
           {/* Tuition Tab - Split into 70% invoice list and 30% cart */}
-          <TabsContent value="tuition" className="space-y-0">
-            <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-6">
+          <TabsContent value="tuition" className="space-y-0 px-4 md:px-0 pt-4 md:pt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 md:gap-6">
               {/* Left 70% - Invoice List */}
-              <div className="lg:col-span-7 space-y-3 sm:space-y-4">
-                <div className="mb-3 sm:mb-6">
-                  <h2 className={`text-lg sm:text-2xl font-bold ${fontClass}`}>
+              <div className="lg:col-span-7 space-y-3 md:space-y-4">
+                <div className="mb-3 md:mb-6">
+                  <h2 className={`text-lg md:text-2xl font-bold ${fontClass}`}>
                     {language === 'th' ? 'ใบแจ้งหนี้ปัจจุบัน' : language === 'zh' ? '当前发票' : 'Current Invoice'}
                   </h2>
                 </div>
@@ -328,7 +381,7 @@ export const ParentPortal = ({
               </div>
               
               {/* Mobile Cart Summary - Fixed at bottom */}
-              <div className="lg:hidden">
+              <div className="lg:hidden mb-4">
                 <TuitionCartSidebar
                   items={cartItems.filter(item => item.type === 'tuition').map(item => ({
                     id: item.id,
@@ -345,7 +398,7 @@ export const ParentPortal = ({
           </TabsContent>
 
           {/* Credit Notes Tab */}
-          <TabsContent value="creditNotes" className="space-y-6">
+          <TabsContent value="creditNotes" className="space-y-6 px-4 md:px-0 pt-4 md:pt-0">
             <CreditNoteHistory 
               creditNotes={allCreditNotes}
               students={mockStudents}
@@ -354,7 +407,7 @@ export const ParentPortal = ({
           </TabsContent>
 
           {/* Receipts Tab - Combined data with student identification */}
-          <TabsContent value="receipts" className="space-y-6">
+          <TabsContent value="receipts" className="space-y-6 px-4 md:px-0 pt-4 md:pt-0">
             <ReceiptList 
               receipts={allReceipts}
               onDownload={handleDownloadReceipt}
