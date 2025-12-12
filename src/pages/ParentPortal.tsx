@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { PortalHeader } from "@/components/portal/PortalHeader";
-import { ChildrenOverview } from "@/components/portal/ChildrenOverview";
+import { MobileBottomNav } from "@/components/portal/MobileBottomNav";
 import { SummaryBox } from "@/components/portal/SummaryBox";
 import { InvoiceCard } from "@/components/portal/InvoiceCard";
 import { TuitionCartSidebar } from "@/components/portal/TuitionCartSidebar";
 import { ReceiptList } from "@/components/portal/ReceiptList";
 import { CreditNoteHistory } from "@/components/portal/CreditNoteHistory";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -172,46 +171,54 @@ export const ParentPortal = ({
     setTimeout(() => setHighlightedCreditNoteId(null), 2500);
   };
 
+  const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
+
   return (
-    <div className="min-h-screen bg-background pb-20">
-        <PortalHeader 
-          onLogout={onLogout} 
-          activeTab={activeTab}
-          onTabChange={(tab: string) => setActiveTab(tab as 'dashboard' | 'tuition' | 'receipts')}
-          cartItemCount={cartItems.length}
-          onGoToCart={handleGoToCart}
-          showCountdown={showCountdown}
-          onCountdownExpired={onCountdownExpired}
-          onCancelCountdown={onCancelCountdown}
-          additionalCourses={courseItemsCount}
-        />
+    <div className="min-h-screen bg-background pb-20 md:pb-6">
+      <PortalHeader 
+        onLogout={onLogout} 
+        activeTab={activeTab}
+        onTabChange={(tab: string) => setActiveTab(tab as 'dashboard' | 'tuition' | 'receipts')}
+        cartItemCount={cartItems.length}
+        onGoToCart={handleGoToCart}
+        showCountdown={showCountdown}
+        onCountdownExpired={onCountdownExpired}
+        onCancelCountdown={onCancelCountdown}
+        additionalCourses={courseItemsCount}
+      />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')} className="space-y-6">
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav 
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')}
+      />
+      
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')} className="space-y-4 sm:space-y-6">
           {/* Desktop Navigation - Tabs */}
           <TabsList className="hidden md:grid w-full grid-cols-4 gap-1">
-            <TabsTrigger value="dashboard" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
+            <TabsTrigger value="dashboard" className={fontClass}>
               <GraduationCap className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">{t('portal.dashboard')}</span>
             </TabsTrigger>
-            <TabsTrigger value="tuition" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
+            <TabsTrigger value="tuition" className={fontClass}>
               <DollarSign className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">{t('portal.tuition')}</span>
             </TabsTrigger>
-            <TabsTrigger value="creditNotes" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
+            <TabsTrigger value="creditNotes" className={fontClass}>
               <Receipt className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">{language === 'th' ? 'Credit Note' : language === 'zh' ? '信用票据' : 'Credit Note'}</span>
             </TabsTrigger>
-            <TabsTrigger value="receipts" className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
+            <TabsTrigger value="receipts" className={fontClass}>
               <Receipt className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">{t('portal.receipts')}</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab - Combined data for all students with student tags */}
-          <TabsContent value="dashboard" className="space-y-6">
-            {/* Summary Stats - Combined across all students */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <TabsContent value="dashboard" className="space-y-4 sm:space-y-6">
+            {/* Summary Stats - 2 columns on mobile, 3 on desktop */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
               <SummaryBox
                 title={t('portal.outstandingInvoices')}
                 value={formatCurrency(outstandingAmount)}
@@ -241,17 +248,17 @@ export const ParentPortal = ({
 
             {/* Upcoming Deadlines - Combined with student identification */}
             <Card>
-              <CardHeader>
-                <CardTitle className={`flex items-center gap-2 ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                  <AlertCircle className="h-5 w-5" />
+              <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
+                <CardTitle className={`flex items-center gap-2 text-base sm:text-lg ${fontClass}`}>
+                  <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                   {t('portal.upcomingDeadlines')}
                 </CardTitle>
-                <CardDescription className={language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}>
+                <CardDescription className={`text-xs sm:text-sm ${fontClass}`}>
                   {t('portal.importantDates')} {t('portal.allStudents')}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                <div className="space-y-2 sm:space-y-3">
                   {allInvoices
                     .filter(inv => inv.status === 'pending')
                     .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
@@ -259,19 +266,19 @@ export const ParentPortal = ({
                     .map(invoice => {
                       const student = mockStudents.find(s => s.id === invoice.student_id);
                       return (
-                        <div key={invoice.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-muted/50 rounded-lg gap-2">
-                          <div className="flex items-center gap-3">
-                            <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <div key={invoice.id} className="flex items-start sm:items-center justify-between p-2 sm:p-3 bg-muted/50 rounded-lg gap-2">
+                          <div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0 mt-0.5 sm:mt-0" />
                             <div className="min-w-0 flex-1">
-                              <p className={`font-medium text-sm sm:text-base truncate ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              <p className={`font-medium text-xs sm:text-base truncate ${fontClass}`}>
                                 {invoice.description}
                               </p>
-                              <p className={`text-xs sm:text-sm text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+                              <p className={`text-[10px] sm:text-sm text-muted-foreground ${fontClass}`}>
                                 {student?.name} • {t('portal.due')}: {new Date(invoice.due_date).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
-                          <Badge variant="default" className="self-start sm:self-center">
+                          <Badge variant="default" className="text-[10px] sm:text-xs flex-shrink-0">
                             {formatCurrency(invoice.amount_due)}
                           </Badge>
                         </div>
@@ -284,11 +291,11 @@ export const ParentPortal = ({
 
           {/* Tuition Tab - Split into 70% invoice list and 30% cart */}
           <TabsContent value="tuition" className="space-y-0">
-            <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-6">
               {/* Left 70% - Invoice List */}
-              <div className="lg:col-span-7 space-y-4">
-                <div className="mb-6">
-                  <h2 className={`text-2xl font-bold ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
+              <div className="lg:col-span-7 space-y-3 sm:space-y-4">
+                <div className="mb-3 sm:mb-6">
+                  <h2 className={`text-lg sm:text-2xl font-bold ${fontClass}`}>
                     {language === 'th' ? 'ใบแจ้งหนี้ปัจจุบัน' : language === 'zh' ? '当前发票' : 'Current Invoice'}
                   </h2>
                 </div>
@@ -305,8 +312,23 @@ export const ParentPortal = ({
                 })}
               </div>
 
-              {/* Right 30% - Tuition Cart Sidebar */}
-              <div className="lg:col-span-3">
+              {/* Right 30% - Tuition Cart Sidebar - Hidden on mobile, shown at bottom */}
+              <div className="hidden lg:block lg:col-span-3">
+                <TuitionCartSidebar
+                  items={cartItems.filter(item => item.type === 'tuition').map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    studentName: item.studentName,
+                    studentId: item.studentId
+                  }))}
+                  onRemoveItem={handleRemoveFromCart}
+                  onCheckout={handleGoToCart}
+                />
+              </div>
+              
+              {/* Mobile Cart Summary - Fixed at bottom */}
+              <div className="lg:hidden">
                 <TuitionCartSidebar
                   items={cartItems.filter(item => item.type === 'tuition').map(item => ({
                     id: item.id,
