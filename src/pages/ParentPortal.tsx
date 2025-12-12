@@ -220,14 +220,19 @@ export const ParentPortal = ({
                 key={item.id}
                 onClick={() => setActiveTab(item.id as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap",
+                  "transition-all duration-300 ease-out transform",
+                  "active:scale-95",
                   fontClass,
                   isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    ? "bg-primary text-primary-foreground shadow-md scale-105" 
+                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:scale-102"
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className={cn(
+                  "h-4 w-4 transition-transform duration-300",
+                  isActive && "animate-bounce-in"
+                )} />
                 {item.label}
               </button>
             );
@@ -258,7 +263,7 @@ export const ParentPortal = ({
           </TabsList>
 
           {/* Dashboard Tab - Combined data for all students with student tags */}
-          <TabsContent value="dashboard" className="space-y-0 md:space-y-6 mt-0">
+          <TabsContent value="dashboard" className="space-y-0 md:space-y-6 mt-0 animate-fade-in">
             {/* Mobile Dashboard */}
             <MobileDashboard
               outstandingAmount={outstandingAmount}
@@ -343,7 +348,7 @@ export const ParentPortal = ({
           </TabsContent>
 
           {/* Tuition Tab - Split into 70% invoice list and 30% cart */}
-          <TabsContent value="tuition" className="space-y-0 px-4 md:px-0 pt-4 md:pt-0">
+          <TabsContent value="tuition" className="space-y-0 px-4 md:px-0 pt-4 md:pt-0 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 md:gap-6">
               {/* Left 70% - Invoice List */}
               <div className="lg:col-span-7 space-y-3 md:space-y-4">
@@ -398,7 +403,7 @@ export const ParentPortal = ({
           </TabsContent>
 
           {/* Credit Notes Tab */}
-          <TabsContent value="creditNotes" className="space-y-6 px-4 md:px-0 pt-4 md:pt-0">
+          <TabsContent value="creditNotes" className="space-y-6 px-4 md:px-0 pt-4 md:pt-0 animate-fade-in">
             <CreditNoteHistory 
               creditNotes={allCreditNotes}
               students={mockStudents}
@@ -407,7 +412,7 @@ export const ParentPortal = ({
           </TabsContent>
 
           {/* Receipts Tab - Combined data with student identification */}
-          <TabsContent value="receipts" className="space-y-6 px-4 md:px-0 pt-4 md:pt-0">
+          <TabsContent value="receipts" className="space-y-6 px-4 md:px-0 pt-4 md:pt-0 animate-fade-in">
             <ReceiptList 
               receipts={allReceipts}
               onDownload={handleDownloadReceipt}
