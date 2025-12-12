@@ -174,7 +174,7 @@ export const ParentPortal = ({
   const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-6">
+    <div className="min-h-screen bg-muted/20 pb-20 md:pb-6">
       <PortalHeader 
         onLogout={onLogout} 
         activeTab={activeTab}
@@ -193,7 +193,7 @@ export const ParentPortal = ({
         onTabChange={(tab) => setActiveTab(tab as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')}
       />
       
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'dashboard' | 'tuition' | 'creditNotes' | 'receipts')} className="space-y-4 sm:space-y-6">
           {/* Desktop Navigation - Tabs */}
           <TabsList className="hidden md:grid w-full grid-cols-4 gap-1">

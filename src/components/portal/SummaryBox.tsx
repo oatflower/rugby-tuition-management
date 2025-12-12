@@ -49,21 +49,26 @@ export const SummaryBox = ({
 
   return (
     <Card 
-      className={`relative overflow-hidden transition-all hover:shadow-md border-2 ${colorClasses[color]} ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''}`}
+      className={`relative overflow-hidden transition-all hover:shadow-sm border ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''} bg-card`}
       onClick={onClick}
     >
       <CardContent className="p-3 sm:p-4">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-3">
+          {/* Icon - Clean circle style */}
+          <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full ${iconBgClasses[color]} flex items-center justify-center flex-shrink-0`}>
+            <Icon className="h-5 w-5 sm:h-5 sm:w-5" />
+          </div>
+          
           <div className="flex-1 min-w-0">
-            <p className={`text-xs sm:text-sm font-medium text-muted-foreground mb-0.5 sm:mb-1 truncate ${fontClass}`}>
+            <p className={`text-[11px] sm:text-xs font-medium text-muted-foreground truncate ${fontClass}`}>
               {title}
             </p>
-            <div className="flex items-baseline gap-1 sm:gap-2">
-              <p className={`text-base sm:text-xl font-bold truncate ${fontClass}`}>
+            <div className="flex items-baseline gap-1.5">
+              <p className={`text-base sm:text-lg font-bold text-foreground truncate ${fontClass}`}>
                 {typeof value === 'number' ? value.toLocaleString() : value}
               </p>
               {trend && (
-                <span className={`text-[10px] sm:text-xs font-medium flex-shrink-0 ${
+                <span className={`text-[10px] font-medium flex-shrink-0 ${
                   trend.isPositive ? 'text-finance-green' : 'text-destructive'
                 } ${fontClass}`}>
                   {trend.isPositive ? '+' : ''}{trend.value}%
@@ -71,14 +76,10 @@ export const SummaryBox = ({
               )}
             </div>
             {subtitle && (
-              <p className={`text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate ${fontClass}`}>
+              <p className={`text-[10px] sm:text-xs text-muted-foreground truncate ${fontClass}`}>
                 {subtitle}
               </p>
             )}
-          </div>
-          
-          <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg ${iconBgClasses[color]} flex items-center justify-center flex-shrink-0`}>
-            <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
           </div>
         </div>
       </CardContent>

@@ -72,15 +72,15 @@ export const PortalHeader = ({
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6">
+      <header className="sticky top-0 z-50 bg-background border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo & Title */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-8 sm:h-10 w-auto" />
+            <div className="flex items-center gap-3">
+              <img src={sisbLogo} alt="Rugby School Thailand Logo" className="h-9 sm:h-10 w-auto rounded-full" />
               <div>
-                <h1 className={`text-sm sm:text-lg font-bold text-foreground ${fontClass}`}>
-                  Payment Portal
+                <h1 className={`text-base sm:text-lg font-semibold text-foreground ${fontClass}`}>
+                  {language === 'th' ? 'ระบบชำระเงิน' : language === 'zh' ? '付款门户' : 'Payment Portal'}
                 </h1>
               </div>
             </div>
@@ -121,21 +121,21 @@ export const PortalHeader = ({
               </Dialog>
             </div>
 
-            {/* Mobile: Language + Notification only */}
-            <div className="flex md:hidden items-center gap-1">
+            {/* Mobile: Language + Notification */}
+            <div className="flex md:hidden items-center gap-2">
               <LanguageSelector />
               <Dialog open={notificationOpen} onOpenChange={setNotificationOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative h-9 w-9 p-0">
-                    <Bell className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="relative h-9 w-9">
+                    <Bell className="h-5 w-5" />
                     {totalNotifications > 0 && (
-                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
+                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive text-destructive-foreground rounded-full text-[10px] flex items-center justify-center font-medium">
                         {totalNotifications}
-                      </Badge>
+                      </span>
                     )}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[calc(100vw-2rem)] mx-4 rounded-lg">
+                <DialogContent className="max-w-[calc(100vw-2rem)] mx-4 rounded-xl">
                   <DialogHeader>
                     <DialogTitle className={fontClass}>{t('portal.notifications')}</DialogTitle>
                   </DialogHeader>
@@ -157,29 +157,27 @@ export const PortalHeader = ({
         </div>
       </header>
       
-      {/* Welcome Section - Compact on mobile */}
-      <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-border">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-              <div className="min-w-0">
-                <h2 className={`text-base sm:text-xl font-semibold text-primary truncate ${fontClass}`}>
-                  {t('portal.welcome')}, John
-                </h2>
-                <p className={`text-xs sm:text-sm text-muted-foreground truncate ${fontClass}`}>
-                  {formattedToday}
-                </p>
-              </div>
-              
-              {/* Countdown Timer */}
-              {showCountdown && onCountdownExpired && onCancelCountdown && (
-                <CountdownTimer 
-                  onTimeExpired={onCountdownExpired} 
-                  onCancel={onCancelCountdown} 
-                  additionalCourses={additionalCourses} 
-                />
-              )}
+      {/* Welcome Section - Clean & Minimal */}
+      <div className="bg-muted/30 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <h2 className={`text-lg sm:text-xl font-semibold text-foreground ${fontClass}`}>
+                {t('portal.welcome')}, John
+              </h2>
+              <p className={`text-xs sm:text-sm text-muted-foreground ${fontClass}`}>
+                {formattedToday}
+              </p>
             </div>
+            
+            {/* Countdown Timer */}
+            {showCountdown && onCountdownExpired && onCancelCountdown && (
+              <CountdownTimer 
+                onTimeExpired={onCountdownExpired} 
+                onCancel={onCancelCountdown} 
+                additionalCourses={additionalCourses} 
+              />
+            )}
             
             {/* Desktop: Account Selector */}
             <div className="hidden md:block">
