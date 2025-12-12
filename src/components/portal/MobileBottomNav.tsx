@@ -36,8 +36,8 @@ export const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border md:hidden safe-area-bottom shadow-lg">
+      <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -47,19 +47,24 @@ export const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps
               key={item.id}
               onClick={() => onTabChange(item.id)}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full py-2 px-1 transition-colors min-w-0",
-                "active:bg-muted/50 touch-manipulation",
-                isActive ? "text-primary" : "text-muted-foreground"
+                "flex flex-col items-center justify-center flex-1 h-full py-1.5 transition-all",
+                "active:scale-95 touch-manipulation",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn(
-                "h-5 w-5 mb-1 transition-transform",
-                isActive && "scale-110"
-              )} />
+              <div className={cn(
+                "flex items-center justify-center w-10 h-7 rounded-full transition-colors mb-0.5",
+                isActive && "bg-primary/10"
+              )}>
+                <Icon className={cn(
+                  "h-5 w-5 transition-all",
+                  isActive && "text-primary"
+                )} />
+              </div>
               <span className={cn(
-                "text-[10px] leading-tight truncate w-full text-center",
+                "text-[10px] leading-none",
                 fontClass,
-                isActive && "font-semibold"
+                isActive ? "font-semibold text-primary" : "font-medium"
               )}>
                 {item.label}
               </span>
