@@ -53,6 +53,7 @@ export const ParentPortal = ({
 }: ParentPortalProps) => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tuition' | 'creditNotes' | 'receipts'>('dashboard');
   const [selectedStudent, setSelectedStudent] = useState<string>(mockStudents[0]?.id.toString() || '1');
+  const [dashboardSelectedStudent, setDashboardSelectedStudent] = useState<string | 'all'>('all');
   const [isCreditNoteModalOpen, setIsCreditNoteModalOpen] = useState(false);
   const [highlightedCreditNoteId, setHighlightedCreditNoteId] = useState<string | null>(null);
   
@@ -65,14 +66,29 @@ export const ParentPortal = ({
   const allInvoices = mockInvoices;
   const allReceipts = mockReceipts;
   const allCreditNotes = mockCreditNotes;
+
+  // Filter data based on dashboard selected student
+  const filteredInvoices = dashboardSelectedStudent === 'all' 
+    ? allInvoices 
+    : allInvoices.filter(inv => inv.student_id.toString() === dashboardSelectedStudent);
   
-  // Calculate combined statistics
-  const stats = {
-    outstandingInvoices: allInvoices.filter(inv => inv.status === 'pending').length,
-    paidThisTerm: allInvoices.filter(inv => inv.status === 'paid').length,
-    availableCourses: 15,
-  };
+  const filteredCreditNotes = dashboardSelectedStudent === 'all'
+    ? allCreditNotes
+    : allCreditNotes.filter(cn => cn.student_id.toString() === dashboardSelectedStudent);
   
+  // Calculate filtered statistics for dashboard
+  const dashboardOutstandingAmount = filteredInvoices
+    .filter(inv => inv.status === 'pending')
+    .reduce((sum, inv) => sum + inv.amount_due, 0);
+
+  const dashboardTotalCreditNotes = filteredCreditNotes
+    .filter(note => note.status === 'active')
+    .reduce((sum, note) => sum + note.amount, 0);
+
+  const dashboardPendingCount = filteredInvoices.filter(i => i.status === 'pending').length;
+  const dashboardActiveCreditCount = filteredCreditNotes.filter(n => n.status === 'active').length;
+
+  // Calculate combined statistics (for desktop)
   const outstandingAmount = allInvoices
     .filter(inv => inv.status === 'pending')
     .reduce((sum, inv) => sum + inv.amount_due, 0);
@@ -266,13 +282,17 @@ export const ParentPortal = ({
           <TabsContent value="dashboard" className="space-y-0 md:space-y-6 mt-0 animate-fade-in">
             {/* Mobile Dashboard */}
             <MobileDashboard
-              outstandingAmount={outstandingAmount}
-              pendingCount={pendingCount}
-              totalCreditNotes={totalCreditNotes}
-              activeCreditCount={activeCreditCount}
+              outstandingAmount={dashboardOutstandingAmount}
+              pendingCount={dashboardPendingCount}
+              totalCreditNotes={dashboardTotalCreditNotes}
+              activeCreditCount={dashboardActiveCreditCount}
               onViewInvoices={() => setActiveTab('tuition')}
               onViewCreditNotes={() => setIsCreditNoteModalOpen(true)}
-              upcomingInvoices={allInvoices.filter(inv => inv.status === 'pending').sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())}
+              upcomingInvoices={filteredInvoices.filter(inv => inv.status === 'pending').sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())}
+              selectedStudent={dashboardSelectedStudent}
+              onStudentChange={setDashboardSelectedStudent}
+              onAddInvoiceToCart={(invoiceId) => handleAddToCart(invoiceId, 'tuition')}
+              isInvoiceInCart={(invoiceId) => isInCart(invoiceId)}
             />
 
             {/* Desktop Dashboard */}
