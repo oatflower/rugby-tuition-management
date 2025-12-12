@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, DollarSign, Receipt, Calendar, MapPin, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { mockStudents, mockInvoices, mockCreditNotes } from "@/data/mockData";
+import { mockStudents } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 
 interface MobileDashboardProps {
@@ -34,11 +34,18 @@ export const MobileDashboard = ({
   const { t, language, formatCurrency } = useLanguage();
   const [currentCard, setCurrentCard] = useState(0);
   const [isStudentSelectorOpen, setIsStudentSelectorOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const fontClass = language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato';
 
   const studentNames = mockStudents.map((s, i) => `${i + 1}. ${s.name}`).join(", ");
+
+  // Trigger animations on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -79,7 +86,10 @@ export const MobileDashboard = ({
   return (
     <div className="space-y-4 md:hidden">
       {/* Student Selector Card */}
-      <Card className="mx-4 mt-4">
+      <Card className={cn(
+        "mx-4 mt-4 transition-all duration-500 ease-out",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      )}>
         <CardContent className="p-4">
           <button 
             onClick={() => setIsStudentSelectorOpen(!isStudentSelectorOpen)}
@@ -97,7 +107,7 @@ export const MobileDashboard = ({
               </p>
             </div>
             <ChevronDown className={cn(
-              "h-5 w-5 text-muted-foreground transition-transform",
+              "h-5 w-5 text-muted-foreground transition-transform duration-300",
               isStudentSelectorOpen && "rotate-180"
             )} />
           </button>
@@ -105,28 +115,39 @@ export const MobileDashboard = ({
       </Card>
 
       {/* Horizontal Swipeable Summary Cards */}
-      <div className="relative">
+      <div className={cn(
+        "relative transition-all duration-500 ease-out delay-100",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      )}>
         <div 
           ref={scrollContainerRef}
           onScroll={handleScroll}
           className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 gap-3 pb-2"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {summaryCards.map((card) => {
+          {summaryCards.map((card, index) => {
             const Icon = card.icon;
             return (
               <Card 
                 key={card.id}
                 onClick={card.onClick}
-                className="flex-shrink-0 w-[calc(50%-6px)] snap-start cursor-pointer hover:shadow-md transition-shadow"
+                className={cn(
+                  "flex-shrink-0 w-[calc(50%-6px)] snap-start cursor-pointer transition-all duration-300",
+                  "hover:shadow-md active:scale-[0.98]",
+                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                )}
+                style={{ transitionDelay: `${150 + index * 100}ms` }}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-2">
-                    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", card.iconBg)}>
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110",
+                      card.iconBg
+                    )}>
                       <Icon className={cn("h-5 w-5", card.iconColor)} />
                     </div>
                     {card.badge && (
-                      <Badge variant="secondary" className="text-primary bg-primary/10">
+                      <Badge variant="secondary" className="text-primary bg-primary/10 animate-bounce-in">
                         {card.badge}
                       </Badge>
                     )}
@@ -140,11 +161,11 @@ export const MobileDashboard = ({
                   <p className={`text-xs text-muted-foreground ${fontClass}`}>
                     {card.subtitle}
                   </p>
-                  <div className="flex items-center justify-end mt-2 text-muted-foreground">
-                    <span className={`text-xs ${fontClass}`}>
+                  <div className="flex items-center justify-end mt-2 text-muted-foreground group">
+                    <span className={`text-xs transition-transform duration-200 group-hover:translate-x-1 ${fontClass}`}>
                       {language === 'th' ? 'ดูรายละเอียด' : language === 'zh' ? '查看详情' : 'View Details'}
                     </span>
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                   </div>
                 </CardContent>
               </Card>
@@ -158,7 +179,7 @@ export const MobileDashboard = ({
             <div 
               key={index}
               className={cn(
-                "h-1.5 rounded-full transition-all",
+                "h-1.5 rounded-full transition-all duration-300",
                 currentCard === index ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/30"
               )}
             />
@@ -167,7 +188,10 @@ export const MobileDashboard = ({
       </div>
 
       {/* Upcoming Deadlines */}
-      <Card className="mx-4">
+      <Card className={cn(
+        "mx-4 transition-all duration-500 ease-out delay-300",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      )}>
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="h-5 w-5 text-muted-foreground" />
@@ -180,12 +204,16 @@ export const MobileDashboard = ({
           </p>
           
           <div className="space-y-2">
-            {upcomingInvoices.slice(0, 4).map((invoice) => {
-              const student = mockStudents.find(s => s.id === invoice.student_id);
+            {upcomingInvoices.slice(0, 4).map((invoice, index) => {
               return (
                 <div 
                   key={invoice.id}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                  className={cn(
+                    "flex items-center justify-between p-3 bg-muted/50 rounded-lg",
+                    "transition-all duration-300 hover:bg-muted/70 active:scale-[0.99]",
+                    isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                  )}
+                  style={{ transitionDelay: `${400 + index * 50}ms` }}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -204,7 +232,7 @@ export const MobileDashboard = ({
                     <Badge className="bg-primary/10 text-primary border-0">
                       {formatCurrency(invoice.amount_due)}
                     </Badge>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 hover:rotate-180" />
                   </div>
                 </div>
               );
