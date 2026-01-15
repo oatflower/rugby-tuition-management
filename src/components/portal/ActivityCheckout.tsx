@@ -31,10 +31,9 @@ interface ActivityCheckoutProps {
 
 const paymentMethods = [
   { id: 'credit_card', name: 'บัตรเครดิต', icon: CreditCard, fee: 2.9, currency: '%' },
-  { id: 'promptpay', name: 'พร้อมเพย์', icon: QrCode, fee: 0, currency: '฿' },
+  { id: 'promptpay', name: 'พร้อมเพย์', icon: QrCode, fee: 0, currency: '฿', noFee: true },
   { id: 'wechat', name: 'WeChat Pay', icon: MessageCircle, fee: 1.5, currency: '%' },
-  { id: 'alipay', name: 'Alipay', icon: Wallet, fee: 1.5, currency: '%' },
-  { id: 'bank_counter', name: 'บัญชีธนาคาร', icon: Building2, fee: 25, currency: '฿' }
+  { id: 'alipay', name: 'Alipay', icon: Wallet, fee: 1.5, currency: '%' }
 ];
 
 export const ActivityCheckout = ({ 
@@ -147,7 +146,7 @@ export const ActivityCheckout = ({
                         method.id === 'bank_counter' ? 'Bank Account' : method.name)}
                     </span>
                     <div className={`text-xs text-muted-foreground ${language === 'th' ? 'font-sukhumvit' : language === 'zh' ? 'font-noto-sc' : 'font-lato'}`}>
-                      {method.fee === 0 ? t('portal.free') : `+${method.fee}${method.currency}`}
+                      {method.fee === 0 ? t('portal.noFees') : `+${method.fee}${method.currency}`}
                     </div>
                   </div>
                 </div>
