@@ -30,7 +30,7 @@ interface ActivityCheckoutProps {
 }
 
 const paymentMethods = [
-  { id: 'credit_card', name: 'บัตรเครดิต', icon: CreditCard, fee: 2.9, currency: '%' },
+  { id: 'credit_card', name: 'บัตรเครดิต', icon: CreditCard, fee: 1.5, currency: '%' },
   { id: 'promptpay', name: 'พร้อมเพย์', icon: QrCode, fee: 0, currency: '฿', noFee: true },
   { id: 'wechat', name: 'WeChat Pay', icon: MessageCircle, fee: 1.5, currency: '%' },
   { id: 'alipay', name: 'Alipay', icon: Wallet, fee: 1.5, currency: '%' }
