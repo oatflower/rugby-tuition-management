@@ -6,8 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { X, CheckCircle2, ArrowLeft, Receipt, User, AlertTriangle, Info, ShoppingCart } from "lucide-react";
+import { X, CheckCircle2, ArrowLeft, Receipt, ShoppingCart } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PaymentProgressBar } from "./PaymentProgressBar";
 import { mockCreditNotes, mockStudents } from "@/data/mockData";
@@ -35,43 +34,9 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
   // Get active credit notes
   const activeCreditNotes = mockCreditNotes.filter(note => note.status === 'active');
   
-  // Get unique student IDs from cart items
-  const studentsInCart = useMemo(() => {
-    const studentIds = new Set<string>();
-    items.forEach(item => {
-      if (item.studentId) {
-        studentIds.add(item.studentId);
-      }
-    });
-    return Array.from(studentIds);
-  }, [items]);
 
-  // Filter credit notes to only show those for students in cart
-  const applicableCreditNotes = useMemo(() => {
-    return activeCreditNotes.filter(note => 
-      studentsInCart.includes(note.student_id.toString())
-    );
-  }, [activeCreditNotes, studentsInCart]);
-
-  // Credit notes that cannot be applied (for students not in cart)
-  const nonApplicableCreditNotes = useMemo(() => {
-    return activeCreditNotes.filter(note => 
-      !studentsInCart.includes(note.student_id.toString())
-    );
-  }, [activeCreditNotes, studentsInCart]);
-
-  // Group credit notes by student
-  const creditNotesByStudent = useMemo(() => {
-    const grouped: Record<string, typeof activeCreditNotes> = {};
-    applicableCreditNotes.forEach(note => {
-      const studentId = note.student_id.toString();
-      if (!grouped[studentId]) {
-        grouped[studentId] = [];
-      }
-      grouped[studentId].push(note);
-    });
-    return grouped;
-  }, [applicableCreditNotes]);
+  // All active credit notes are now applicable (cross-student usage allowed)
+  const applicableCreditNotes = activeCreditNotes;
 
   // Initialize selected credit notes with all applicable ones
   const [selectedCreditNotes, setSelectedCreditNotes] = useState<string[]>(
@@ -115,58 +80,41 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
   const selectedCartItems = items.filter(item => selectedItems.includes(item.id));
   const subtotal = selectedCartItems.reduce((sum, item) => sum + item.price, 0);
 
-  // Calculate credit applied per student (credit can only apply to same student's items)
+  // Calculate credit applied across all students (cross-student usage allowed)
   const creditCalculation = useMemo(() => {
-    const result: Record<string, { 
-      studentTotal: number, 
-      creditApplied: number, 
-      remainingCredit: number,
-      usedCredits: { id: string, amount: number, usedAmount: number }[]
-    }> = {};
+    // Get all selected credit notes, sorted by timestamp (FIFO - oldest first)
+    const selectedCredits = applicableCreditNotes
+      .filter(note => selectedCreditNotes.includes(note.id))
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     
-    // Calculate total per student from selected items
-    Object.entries(groupedItems).forEach(([studentName, { items: studentItems, studentId }]) => {
-      const studentTotal = studentItems
-        .filter(item => selectedItems.includes(item.id))
-        .reduce((sum, item) => sum + item.price, 0);
-      
-      // Get selected credit notes for this student - sorted by timestamp (FIFO - oldest first)
-      const studentCreditNotes = (creditNotesByStudent[studentId] || [])
-        .filter(note => selectedCreditNotes.includes(note.id))
-        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-      
-      let totalCreditAvailable = studentCreditNotes.reduce((sum, note) => sum + note.amount, 0);
-      let creditApplied = Math.min(studentTotal, totalCreditAvailable);
-      let remainingCredit = totalCreditAvailable - creditApplied;
-      
-      // Track how much of each credit note was used
-      let remainingPrice = studentTotal;
-      const usedCredits: { id: string, amount: number, usedAmount: number }[] = [];
-      
-      studentCreditNotes.forEach(note => {
-        if (remainingPrice > 0) {
-          const usedAmount = Math.min(note.amount, remainingPrice);
-          usedCredits.push({ id: note.id, amount: note.amount, usedAmount });
-          remainingPrice -= usedAmount;
-        } else {
-          usedCredits.push({ id: note.id, amount: note.amount, usedAmount: 0 });
-        }
-      });
-      
-      result[studentId] = { 
-        studentTotal, 
-        creditApplied, 
-        remainingCredit,
-        usedCredits
-      };
+    let totalCreditAvailable = selectedCredits.reduce((sum, note) => sum + note.amount, 0);
+    let creditApplied = Math.min(subtotal, totalCreditAvailable);
+    let remainingCredit = totalCreditAvailable - creditApplied;
+    
+    // Track how much of each credit note was used
+    let remainingPrice = subtotal;
+    const usedCredits: { id: string, amount: number, usedAmount: number }[] = [];
+    
+    selectedCredits.forEach(note => {
+      if (remainingPrice > 0) {
+        const usedAmount = Math.min(note.amount, remainingPrice);
+        usedCredits.push({ id: note.id, amount: note.amount, usedAmount });
+        remainingPrice -= usedAmount;
+      } else {
+        usedCredits.push({ id: note.id, amount: note.amount, usedAmount: 0 });
+      }
     });
     
-    return result;
-  }, [groupedItems, selectedItems, creditNotesByStudent, selectedCreditNotes]);
+    return { 
+      creditApplied, 
+      remainingCredit,
+      usedCredits
+    };
+  }, [applicableCreditNotes, selectedCreditNotes, subtotal]);
 
   // Calculate totals
-  const totalCreditApplied = Object.values(creditCalculation).reduce((sum, calc) => sum + calc.creditApplied, 0);
-  const totalRemainingCredit = Object.values(creditCalculation).reduce((sum, calc) => sum + calc.remainingCredit, 0);
+  const totalCreditApplied = creditCalculation.creditApplied;
+  const totalRemainingCredit = creditCalculation.remainingCredit;
   const finalTotal = Math.max(0, subtotal - totalCreditApplied);
 
   const getStudentInfo = (studentId: string) => {
@@ -241,80 +189,69 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
                       </CardTitle>
                       <p className={`text-[10px] sm:text-xs text-muted-foreground ${fontClass}`}>
                         {language === 'th' 
-                          ? '* Credit Note ใช้ได้เฉพาะนักเรียนที่ได้รับเท่านั้น' 
+                          ? '* Credit Note สามารถใช้ได้กับ Invoice ของทุกคนในครอบครัว' 
                           : language === 'zh' 
-                          ? '* 信用票据只能用于分配给的学生'
-                          : '* Credit notes can only be applied to the assigned student'}
+                          ? '* 信用票据可用于家庭中所有学生的发票'
+                          : '* Credit notes can be applied to any student\'s invoice in the family'}
                       </p>
+                      {totalRemainingCredit > 0 && (
+                        <Badge variant="outline" className="w-fit text-orange-600 border-orange-300 text-[10px] sm:text-xs mt-2">
+                          {language === 'th' ? 'Credit คงเหลือ: ' : 'Remaining Credit: '}
+                          {formatCurrency(totalRemainingCredit)}
+                        </Badge>
+                      )}
                     </CardHeader>
                     <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
                       {/* Scrollable if more than 5 items */}
                       <ScrollArea className={applicableCreditNotes.length > 5 ? "h-[220px] sm:h-[280px]" : ""}>
-                        <div className="space-y-3 sm:space-y-4 pr-2 sm:pr-4">
-                          {Object.entries(creditNotesByStudent).map(([studentId, notes]) => {
-                            const student = getStudentInfo(studentId);
-                            const calc = creditCalculation[studentId];
-                            
-                            return (
-                              <div key={studentId} className="space-y-2">
-                                {/* Student Header */}
-                                <div className="flex items-center gap-2 py-2 border-b">
-                                  <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
-                                  <span className={`text-xs sm:text-sm font-medium ${fontClass}`}>
-                                    {student?.avatar} {student?.name}
+                        <div className="space-y-2 pr-2 sm:pr-4">
+                          {applicableCreditNotes
+                            .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+                            .map((note) => {
+                              const student = getStudentInfo(note.student_id.toString());
+                              const usedCredit = creditCalculation.usedCredits.find(uc => uc.id === note.id);
+                              const isPartiallyUsed = usedCredit && usedCredit.usedAmount > 0 && usedCredit.usedAmount < note.amount;
+                              
+                              return (
+                                <div 
+                                  key={note.id} 
+                                  className={`flex items-start space-x-2 sm:space-x-3 p-2 rounded-lg active:bg-accent/50 transition-colors ${
+                                    selectedCreditNotes.includes(note.id) ? 'bg-primary/5 border border-primary/20' : ''
+                                  }`}
+                                >
+                                  <Checkbox
+                                    checked={selectedCreditNotes.includes(note.id)}
+                                    onCheckedChange={() => handleCreditNoteToggle(note.id)}
+                                    className="mt-0.5"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1.5 mb-0.5">
+                                      <span className="text-sm">{student?.avatar}</span>
+                                      <span className={`text-[10px] sm:text-xs text-muted-foreground ${fontClass}`}>
+                                        {student?.name}
+                                      </span>
+                                    </div>
+                                    <p className={`text-xs sm:text-sm font-medium truncate ${fontClass}`}>
+                                      {note.details}
+                                    </p>
+                                    <p className={`text-[10px] sm:text-xs text-muted-foreground ${fontClass}`}>
+                                      {note.id}
+                                    </p>
+                                    {isPartiallyUsed && selectedCreditNotes.includes(note.id) && (
+                                      <p className={`text-[10px] sm:text-xs text-orange-600 mt-1 ${fontClass}`}>
+                                        {language === 'th' 
+                                          ? `ใช้ ${formatCurrency(usedCredit.usedAmount)}`
+                                          : `Used ${formatCurrency(usedCredit.usedAmount)}`
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                  <span className={`text-xs sm:text-sm font-bold text-primary flex-shrink-0 ${fontClass}`}>
+                                    -{formatCurrency(note.amount)}
                                   </span>
-                                  {calc && calc.remainingCredit > 0 && (
-                                    <Badge variant="outline" className="ml-auto text-orange-600 border-orange-300 text-[10px] sm:text-xs">
-                                      {language === 'th' ? 'เหลือ: ' : 'Left: '}
-                                      {formatCurrency(calc.remainingCredit)}
-                                    </Badge>
-                                  )}
                                 </div>
-                                
-                                {/* Credit Notes for this student */}
-                                <div className="space-y-2 pl-1 sm:pl-2">
-                                  {notes.map((note) => {
-                                    const usedCredit = calc?.usedCredits.find(uc => uc.id === note.id);
-                                    const isPartiallyUsed = usedCredit && usedCredit.usedAmount > 0 && usedCredit.usedAmount < note.amount;
-                                    
-                                    return (
-                                      <div 
-                                        key={note.id} 
-                                        className={`flex items-start space-x-2 sm:space-x-3 p-2 rounded-lg active:bg-accent/50 transition-colors ${
-                                          selectedCreditNotes.includes(note.id) ? 'bg-primary/5 border border-primary/20' : ''
-                                        }`}
-                                      >
-                                        <Checkbox
-                                          checked={selectedCreditNotes.includes(note.id)}
-                                          onCheckedChange={() => handleCreditNoteToggle(note.id)}
-                                          className="mt-0.5"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                          <p className={`text-xs sm:text-sm font-medium truncate ${fontClass}`}>
-                                            {note.details}
-                                          </p>
-                                          <p className={`text-[10px] sm:text-xs text-muted-foreground ${fontClass}`}>
-                                            {note.id}
-                                          </p>
-                                          {isPartiallyUsed && selectedCreditNotes.includes(note.id) && (
-                                            <p className={`text-[10px] sm:text-xs text-orange-600 mt-1 ${fontClass}`}>
-                                              {language === 'th' 
-                                                ? `ใช้ ${formatCurrency(usedCredit.usedAmount)}`
-                                                : `Used ${formatCurrency(usedCredit.usedAmount)}`
-                                              }
-                                            </p>
-                                          )}
-                                        </div>
-                                        <span className={`text-xs sm:text-sm font-bold text-primary flex-shrink-0 ${fontClass}`}>
-                                          -{formatCurrency(note.amount)}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
                         </div>
                       </ScrollArea>
                     </CardContent>
@@ -342,22 +279,12 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
                 </div>
 
                 {/* Items by Student */}
-                {Object.entries(groupedItems).map(([studentName, { items: studentItems, studentId }]) => {
-                  const calc = creditCalculation[studentId];
-                  
-                  return (
+                {Object.entries(groupedItems).map(([studentName, { items: studentItems, studentId }]) => (
                     <Card key={studentName}>
                       <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 pt-3 sm:pt-6">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className={`text-sm sm:text-base ${fontClass}`}>
-                            {studentName}
-                          </CardTitle>
-                          {calc && calc.creditApplied > 0 && (
-                            <Badge variant="secondary" className="text-primary text-[10px] sm:text-xs">
-                              Credit: -{formatCurrency(calc.creditApplied)}
-                            </Badge>
-                          )}
-                        </div>
+                        <CardTitle className={`text-sm sm:text-base ${fontClass}`}>
+                          {studentName}
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="pt-0 px-3 sm:px-6 pb-3 sm:pb-6">
                         <div className="space-y-3 sm:space-y-4">
@@ -405,24 +332,11 @@ export const CartView = ({ items, onRemoveItem, onCheckout, onBack }: CartViewPr
                         </div>
                       </CardContent>
                     </Card>
-                  );
-                })}
+                  ))}
               </div>
 
               {/* Right Side - Summary - Desktop Only */}
               <div className="hidden lg:block space-y-6">
-                {/* Warning for non-applicable credit notes */}
-                {nonApplicableCreditNotes.length > 0 && (
-                  <Alert variant="default" className="border-orange-300 bg-orange-50">
-                    <AlertTriangle className="h-4 w-4 text-orange-600" />
-                    <AlertDescription className={`text-orange-700 ${fontClass}`}>
-                      {language === 'th' 
-                        ? `คุณมี Credit Note ${nonApplicableCreditNotes.length} รายการที่ไม่สามารถใช้ได้`
-                        : `You have ${nonApplicableCreditNotes.length} credit note(s) that cannot be applied`
-                      }
-                    </AlertDescription>
-                  </Alert>
-                )}
 
                 {/* Price Details - Desktop */}
                 <Card>
